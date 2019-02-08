@@ -38,11 +38,11 @@ cd ../bin/
 
 ## Commands
 
-- #### `print`
+- ##### `print`
     Prints out the DOM tree.
-- #### `$("#someId.firstClass.secondClass")`
+- ##### `$("#someId.firstClass.secondClass")`
     _(Work in progress)_ Finds a DOM element with ID `someId` and classes `firstClass` and `secondClass`.
-- #### `exit`
+- ##### `exit`
     Exits the shell.
 
 ## License
