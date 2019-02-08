@@ -5,6 +5,8 @@
 #include <vector>
 #include <map>
 
+#define Log(x) std::cout << x << std::endl
+
 namespace util {
     
 std::vector<std::string> tokenize(std::string in, char delim);

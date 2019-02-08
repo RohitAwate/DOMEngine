@@ -4,6 +4,8 @@ cmake_minimum_required(VERSION 3.0)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_BUILD_TYPE Debug)
 
+add_definitions(-DAPP_VERSION="1.0.0")
+
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/../bin)
 
 include_directories(
@@ -16,6 +18,7 @@ set(SRC
 	src/tree.cpp
 	src/parser.cpp
 	src/util.cpp
+	src/shell.cpp
 )
 
 add_executable(dom-engine ${SRC})

@@ -3,10 +3,7 @@
 
 #include <stack>
 
-#define Log(x) std::cout << x << std::endl
-
-namespace dom
-{
+namespace dom {
 
 Parser::Parser(char* fname) : filename(fname) {}
 
