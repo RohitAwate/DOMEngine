@@ -3,9 +3,8 @@
 
 #include "node.h"
 
-namespace dom
-{
-    
+namespace dom {
+   
 class Tree
 {
 private:

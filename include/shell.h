@@ -6,8 +6,12 @@
 #include "node.h"
 #include "tree.h"
 
-namespace dom
-{
+namespace dom {
+
+#define TEXT_BOLD 		"\e[1m"
+#define TEXT_ITALIC 	"\e[3m"
+#define TEXT_UNDERLINE 	"\e[4m"
+#define TEXT_RESET 		"\e[0m"
 
 class Shell
 {

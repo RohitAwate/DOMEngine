@@ -3,3 +3,4 @@
 #include "node.h"
 #include "tree.h"
 #include "shell.h"
+#include "parser.h"
