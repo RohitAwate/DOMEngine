@@ -1,5 +1,9 @@
-# DOM Engine
-A simple command-line program for parsing HTML files and building a DOM tree which can then be accessed and manipulated from an interactive shell using jQuery-like simple commands.
+# DOM Manipulation Engine
+A simple command-line program for parsing HTML files and building a DOM tree which can then be accessed and manipulated from an interactive shell using jQuery-like selectors and commands.
+
+This is an nothing more than an effort at learning modern, idiomatic C++ and understanding the working of web browsers. Its intriguing at best and useless at worst. Have fun with it!
+
+![screenshot](assets/screenshot.png)
 
 ## Building from source
 You'll need the following installed:
@@ -8,7 +12,7 @@ You'll need the following installed:
 - `make`
 - `git`
 
-#### Steps:
+#### Steps
 ```bash
 # Clone the repository
 git clone https://github.com/RohitAwate/DOMEngine
@@ -29,5 +33,18 @@ make
 cd ../bin/
 
 # Run DOM Engine
-./dom-engine
+./dom-engine <html-file>
 ```
+
+## Commands
+
+- `print`
+    Prints out the DOM tree.
+- `$("#someId.firstClass.secondClass")`
+    _(Work in progress)_ Finds a DOM element with ID `someId` and classes `firstClass` and `secondClass`.
+- `exit`
+    Exits the shell.
+
+## License
+MIT
+    
