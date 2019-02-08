@@ -3,32 +3,13 @@
 
 #include <iostream>
 #include <vector>
+#include <map>
 
 namespace util {
     
-std::vector<std::string> tokenize(std::string in, char delim)
-{
-    int start = 0;
-    std::vector<std::string> tokens;
+std::vector<std::string> tokenize(std::string in, char delim);
 
-    for (int i = 0; i < in.length(); i++)
-    {
-        if (in[i] == delim)
-        {
-            tokens.push_back(in.substr(start, i-start));
-            start = i+1;
-        }
-    }
-
-    tokens.push_back(in.substr(start, start-in.length()));
-
-    return tokens;
-}
-
-void readLine(std::string& line)
-{
-    std::cin >> line;
-}
+void readLine(std::string& line);
 
 template <typename K, typename V>
 V mapGet(std::map<K, V>& m, K key)

@@ -14,6 +14,8 @@ set(SRC
 	src/main.cpp
 	src/node.cpp
 	src/tree.cpp
+	src/parser.cpp
+	src/util.cpp
 )
 
 add_executable(dom-engine ${SRC})
