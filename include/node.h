@@ -16,8 +16,8 @@ private:
     std::vector<Node*> *children;
     std::map<std::string, std::string> *attributes;
 
-    friend class DOMTree;
-    friend class DOMParser;
+    friend class Tree;
+    friend class Parser;
 public:
 	Node(std::string& stype);
 

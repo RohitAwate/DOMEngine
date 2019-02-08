@@ -13,6 +13,7 @@ include_directories(
 set(SRC
 	src/main.cpp
 	src/node.cpp
+	src/tree.cpp
 )
 
 add_executable(dom-engine ${SRC})
