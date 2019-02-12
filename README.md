@@ -3,7 +3,7 @@
 
 A simple command-line program for parsing HTML files and building a DOM tree which can then be accessed and manipulated from an interactive shell using jQuery-like selectors and commands.
 
-This is an nothing more than an effort at learning modern, idiomatic C++ and understanding the working of web browsers. Its intriguing at best and useless at worst. Have fun with it!
+This is nothing more than an effort at learning modern, idiomatic C++ and understanding the working of web browsers. Its amusing at best and useless at worst. Have fun with it!
 
 ![screenshot](assets/screenshot.png)
 
