@@ -7,6 +7,8 @@
 
 namespace dom {
 
+typedef std::pair<std::string, std::vector<std::string>> SelectorPair;
+
 class Node
 {
 private:
@@ -40,7 +42,7 @@ public:
 	 * 	 0 - if node has no attributes or doesn't match
 	 * 	-1 - if invalid identifier is supplied, such as one containing more than one IDs
 	 */
-	int matches(std::string& identifier);
+	int matches(SelectorPair& selPair);
 };
 
 } // namespace dom

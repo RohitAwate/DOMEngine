@@ -11,7 +11,7 @@ Shell::Shell(Tree* _dtree) : dtree(_dtree){}
 
 void Shell::start()
 {
-    if (dtree == NULL || !dtree->isBuilt())
+    if (dtree == nullptr || !dtree->isBuilt())
     {
         Log("DOM Tree not built.");
         return;
@@ -46,14 +46,16 @@ void Shell::resolveCmd(std::string& cmd)
         // Check if first function call matches the selector command format
         if (regex_match(cmd.substr(0, cmd.find_first_of(')') + 1), SELECTOR_CMD_FORMAT))
         {
-            std::string identifier = cmd.substr(3, cmd.find_first_of(')') - 4);
-            dtree->match(identifier);
+            std::string selector = cmd.substr(3, cmd.find_first_of(')') - 4);
+            auto matchedNode = dtree->match(selector);
+            if (matchedNode) Log(matchedNode->toString());
+            else Log("No match found: " << selector);
         }
         else Log("Invalid syntax: " << cmd);
     }
     else Log("Unknown command: " << cmd);
 }
 
-const std::regex Shell::SELECTOR_CMD_FORMAT{"\\$\\(\".*\"\\)"};
+const std::regex Shell::SELECTOR_CMD_FORMAT{R"(\$\(".*"\))"};
 
 } // namespace dom

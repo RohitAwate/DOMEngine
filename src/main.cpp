@@ -5,6 +5,7 @@ int main(int argc, char* argv[])
 {
 	if (argc != 2)
 	{
+		std::cout << "Input file not provided." << std::endl;
 		std::cout << "Usage: dom-engine <filename>" << std::endl;
 		return 1;
 	}

@@ -6,7 +6,7 @@
 
 namespace dom {
 
-Node::Node(std::string& stype) : type(stype), parent(NULL), attributes(NULL) {}
+Node::Node(std::string& stype) : type(stype), parent(nullptr), attributes(nullptr) {}
 
 std::string& Node::getInnerHTML() { return innerHTML; }
 
@@ -19,7 +19,7 @@ void Node::setParent(Node* parent) { this->parent = parent; }
 void Node::appendChild(Node* child)
 {
 	// Lazy initializing the vector to prevent memory allocation for leaf nodes
-	if (children == NULL)
+	if (children == nullptr)
 		children = new std::vector<Node*>();
 
 	child->setParent(this);
@@ -31,7 +31,7 @@ std::string Node::toString()
 	std::ostringstream out;
 	out << type;
 
-	if (attributes != NULL)
+	if (attributes != nullptr)
 	{
 		auto id = util::mapGet<std::string, std::string>(*attributes, "id");
 		if (id != "") out << COLOR_RED << "#" << id << COLOR_RESET;
@@ -50,48 +50,22 @@ std::string Node::toString()
 	* 	 0 - if node has no attributes or doesn't match
 	* 	-1 - if invalid identifier is supplied, such as one containing more than one IDs
 	*/
-int Node::matches(std::string& identifier)
+int Node::matches(SelectorPair& selPair)
 {
 	if (!attributes) return 0;
-	if (identifier == "") return -1;
 
 	auto id = util::mapGet<std::string, std::string>(*attributes, "id");
 	auto classNamesStr = util::mapGet<std::string, std::string>(*attributes, "class");
-	if (id == "" && classNamesStr == "") return 0;
 
-	int len = identifier.length();
-	int curr = 0;
-
-	std::string argId;
-	std::vector<std::string> argClassNames;
-	char ch;
-	while (curr < len)
-	{
-		ch = identifier[curr];
-		if (ch == '.')
-		{
-			curr++;
-			int start = curr;
-
-			while (identifier[curr] != '.' && identifier[curr] != '#' && curr < len) curr++;
-
-			argClassNames.push_back(identifier.substr(start, curr - start));
-		}
-		else if (ch == '#')
-		{
-			curr++;
-			int start = curr;
-
-			while (identifier[curr] != '.' && identifier[curr] != '#' && curr < len) curr++;
-
-			if (argId != "") return -1;
-			argId = identifier.substr(start, curr - start);
-		}
-		else curr++;
-	}
-
-	if (argId != id) return 0;
-	return argClassNames == util::tokenize(classNamesStr, ' ');
+	if (selPair.first.empty())
+		// No ID in identifier, compare only on class
+		return selPair.second == util::tokenize(classNamesStr, ' ');
+	else if (selPair.second.empty())
+		// No classes in identifier, compare only ID
+		return selPair.first == id;
+	else
+		// Compare both
+		return selPair.first == id && selPair.second == util::tokenize(classNamesStr, ' ');
 }
 
 } // namespace dom

@@ -13,7 +13,7 @@ Tree* Parser::parse()
     if (!fd.good())
     {
         Log("Could not open file: " << filename);
-        return NULL;
+        return nullptr;
     }
 
     std::string line;

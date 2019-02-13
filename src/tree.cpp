@@ -1,5 +1,6 @@
 #include "tree.h"
 #include "style.h"
+#include "util.h"
 
 #include <sstream>
 
@@ -9,12 +10,36 @@ namespace dom {
 
 Tree::Tree(Node* root_) : root(root_) {}
 
-Node* Tree::match(std::string& identifier)
+/*
+	Private delegate of dom::Tree::match(std::string) which
+	performs a recursive depth-first traversal of the tree
+	and returns the first node that matches the selector.
+*/
+Node* Tree::match(Node* node, SelectorPair& selPair)
 {
-	if (root->children->at(0)->matches(identifier))
+	if (node->matches(selPair)) return node;
+
+	if (node->children)
 	{
-		std::cout << TEXT_BOLD << root->children->at(0)->toString() << TEXT_RESET;
+		for (auto child : *(node)->children)
+		{
+			if (child->matches(selPair)) return child;
+			else
+			{
+				auto matchedChild = match(child, selPair);
+				if (matchedChild != nullptr) return matchedChild;
+			}
+		}
 	}
+
+	return nullptr;
+}
+
+// Returns the first node in the tree that matches the given identifier
+Node* Tree::match(std::string& selector)
+{
+	SelectorPair pair = tokenizeSelector(selector);
+	return match(this->root, pair);
 }
 
 void Tree::print()
@@ -24,7 +49,7 @@ void Tree::print()
 
 bool Tree::isBuilt()
 {
-	return root != NULL;
+	return root != nullptr;
 }
 
 std::string Tree::generateTreePrefix(std::string prefix, bool isTail)
@@ -41,7 +66,7 @@ std::string Tree::generateTreePrefix(std::string prefix, bool isTail)
 }
 
 /*
-	Prints the Tree to the console similar to the UNIX 'tree' command.
+	Prints the tree to the console similar to the UNIX 'tree' command.
 	Inspired by this excellent answer on StackOverflow: https://stackoverflow.com/a/8948691/6948907
 
 	It first prints the prefix for the current node. This includes the continuing branches
@@ -73,6 +98,51 @@ void Tree::print(Node* current, std::string prefix, bool isTail)
 		print(current->children->at(i), childPrefix, false);
 
 	print(current->children->back(), childPrefix, true);
+}
+
+/*
+ 	Tokenizes the selector and returns a SelectorPair which
+	contains the ID and the class names.
+
+	If a selector contains multiple IDs, only the first one is considered.
+*/
+SelectorPair Tree::tokenizeSelector(std::string& selector)
+{
+	int len = selector.length();
+	int curr = 0;
+
+	std::string argId;
+	std::vector<std::string> argClassNames;
+	char ch;
+	while (curr < len)
+	{
+		ch = selector[curr];
+		if (ch == '.')
+		{
+			curr++;
+			int start = curr;
+
+			while (selector[curr] != '.' && selector[curr] != '#' && curr < len) curr++;
+
+			argClassNames.push_back(selector.substr(start, curr - start));
+		}
+		else if (ch == '#')
+		{
+			curr++;
+			int start = curr;
+
+			while (selector[curr] != '.' && selector[curr] != '#' && curr < len) curr++;
+
+			if (argId != "") continue;	// Only matching the first ID
+			argId = selector.substr(start, curr - start);
+		}
+		else curr++;
+	}
+
+	SelectorPair pair;
+	pair.first = argId;
+	pair.second = argClassNames;
+	return pair;
 }
 
 } // namespace dom
