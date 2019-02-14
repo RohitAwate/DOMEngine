@@ -19,6 +19,10 @@ public:
 	void start();
 private:
 	void resolveCmd(std::string& cmd);
+
+	void resolveSubCmd(std::string& subCmd, Node* selected);
+
+	void startSubCmdLoop(Node* selected);
 };
 
 } // namespace dom

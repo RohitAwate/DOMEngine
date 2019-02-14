@@ -1,5 +1,6 @@
 #include "shell.h"
 #include "util.h"
+#include "style.h"
 
 #ifndef APP_VERSION
     #define APP_VERSION "(Version not defined. Please use CMake to build the project.)"
@@ -26,8 +27,7 @@ void Shell::start()
         std::cout << "> ";
         util::readLine(cmd);
 
-        if (cmd == "exit")
-            break;
+        if (cmd == "exit") break;
             
         if (cmd == "print")
         {
@@ -48,7 +48,7 @@ void Shell::resolveCmd(std::string& cmd)
         {
             std::string selector = cmd.substr(3, cmd.find_first_of(')') - 4);
             auto matchedNode = dtree->match(selector);
-            if (matchedNode) Log(matchedNode->toString());
+            if (matchedNode) startSubCmdLoop(matchedNode);
             else Log("No match found: " << selector);
         }
         else Log("Invalid syntax: " << cmd);
@@ -57,5 +57,38 @@ void Shell::resolveCmd(std::string& cmd)
 }
 
 const std::regex Shell::SELECTOR_CMD_FORMAT{R"(\$\(".*"\))"};
+
+void Shell::startSubCmdLoop(Node* selected)
+{
+    Log(TEXT_BOLD << "$ " << selected->toString() << TEXT_RESET);
+    std::string subCmd;
+
+    while (true)
+    {
+        std::cout << ".. > ";
+        util::readLine(subCmd);
+
+        if (subCmd == "return") return;
+        if (subCmd == "exit") std::exit(0);
+
+        resolveSubCmd(subCmd, selected);
+    }
+}
+
+void Shell::resolveSubCmd(std::string& subCmd, Node* selected)
+{
+    if (subCmd == "parent")
+    {
+        auto parent = selected->getParent();
+        if (parent == nullptr)
+        {
+            Log("Root node has no parent.");
+            return;
+        }
+
+        Log(selected->getParent()->toString());
+    }
+    else Log("Unknown sub-command: " << subCmd);
+}
 
 } // namespace dom
