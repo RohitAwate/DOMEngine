@@ -88,6 +88,13 @@ void Shell::resolveSubCmd(std::string& subCmd, Node* selected)
 
         Log(selected->getParent()->toString());
     }
+    else if (subCmd == "children")
+    {
+        selected->forEachChild([](Node* child) -> void {
+            Log("- " << child->toString());
+        });
+    }
+
     else Log("Unknown sub-command: " << subCmd);
 }
 

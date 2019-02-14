@@ -4,6 +4,7 @@
 #include <iostream>
 #include <vector>
 #include <map>
+#include <functional>
 
 namespace dom {
 
@@ -43,6 +44,8 @@ public:
 	 * 	-1 - if invalid identifier is supplied, such as one containing more than one IDs
 	 */
 	int matches(SelectorPair& selPair);
+
+	void forEachChild(void(*lambda)(Node*));
 };
 
 } // namespace dom

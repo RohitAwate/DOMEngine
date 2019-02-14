@@ -68,4 +68,10 @@ int Node::matches(SelectorPair& selPair)
 		return selPair.first == id && selPair.second == util::tokenize(classNamesStr, ' ');
 }
 
+void Node::forEachChild(void(*lambda)(Node*))
+{
+	if (children != nullptr)
+		for (auto child : *children) lambda(child);
+}
+
 } // namespace dom
