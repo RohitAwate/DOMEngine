@@ -39,7 +39,7 @@ void Shell::start()
     }
 }
 
-void Shell::resolveCmd(std::string& cmd)
+void Shell::resolveCmd(std::string& cmd) const
 {
     if (cmd[0] == '$')
     {
@@ -58,7 +58,7 @@ void Shell::resolveCmd(std::string& cmd)
 
 const std::regex Shell::SELECTOR_CMD_FORMAT{R"(\$\(".*"\))"};
 
-void Shell::startSubCmdLoop(Node* selected)
+void Shell::startSubCmdLoop(Node* selected) const
 {
     Log(TEXT_BOLD << "$ " << selected->toString() << TEXT_RESET);
     std::string subCmd;
@@ -75,7 +75,7 @@ void Shell::startSubCmdLoop(Node* selected)
     }
 }
 
-void Shell::resolveSubCmd(std::string& subCmd, Node* selected)
+void Shell::resolveSubCmd(std::string& subCmd, Node* selected) const
 {
     if (subCmd == "parent")
     {
@@ -90,11 +90,21 @@ void Shell::resolveSubCmd(std::string& subCmd, Node* selected)
     }
     else if (subCmd == "children")
     {
-        selected->forEachChild([](Node* child) -> void {
+        std::function<void(const Node* child)> lambda = [](const Node* child) {
             Log("- " << child->toString());
-        });
-    }
+        };
 
+        selected->forEachChild(lambda);
+    }
+    else if (subCmd == "attrs")
+    {
+        std::function<void(const std::string&, const std::string&)> lambda = 
+            [](const std::string& key, const std::string& value) {
+                std::cout << "- " << key << ": " << value << std::endl;
+            };
+
+        selected->forEachAttribute(lambda);
+    }
     else Log("Unknown sub-command: " << subCmd);
 }
 

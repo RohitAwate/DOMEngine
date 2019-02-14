@@ -22,11 +22,11 @@ private:
     friend class Tree;
     friend class Parser;
 public:
-	Node(std::string& stype);
+	Node(const std::string& stype);
 
 	std::string& getInnerHTML();
 
-	void setInnerHTML(std::string& innerHTML);
+	void setInnerHTML(const std::string& innerHTML);
 
 	Node* getParent();
 
@@ -34,7 +34,7 @@ public:
 
 	void appendChild(Node* child);
 
-	std::string toString();
+	std::string toString() const;
 
 	/*
 	 *	Parses the identifier and compares it with the ID and class of the node.
@@ -43,9 +43,11 @@ public:
 	 * 	 0 - if node has no attributes or doesn't match
 	 * 	-1 - if invalid identifier is supplied, such as one containing more than one IDs
 	 */
-	int matches(SelectorPair& selPair);
+	int matches(const SelectorPair& selPair);
 
-	void forEachChild(void(*lambda)(Node*));
+	void forEachChild(std::function<void(const Node* child)>& lambda) const;
+
+	void forEachAttribute(std::function<void(const std::string&, const std::string&)>& lambda) const;
 };
 
 } // namespace dom

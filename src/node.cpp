@@ -6,11 +6,11 @@
 
 namespace dom {
 
-Node::Node(std::string& stype) : type(stype), parent(nullptr), attributes(nullptr) {}
+Node::Node(const std::string& stype) : type(stype), parent(nullptr), attributes(nullptr) {}
 
 std::string& Node::getInnerHTML() { return innerHTML; }
 
-void Node::setInnerHTML(std::string& innerHTML) { this->innerHTML = innerHTML; }
+void Node::setInnerHTML(const std::string& innerHTML) { this->innerHTML = innerHTML; }
 
 Node* Node::getParent(){ return parent; }
 
@@ -26,7 +26,7 @@ void Node::appendChild(Node* child)
 	children->push_back(child);
 }
 
-std::string Node::toString()
+std::string Node::toString() const
 {
 	std::ostringstream out;
 	out << type;
@@ -50,7 +50,7 @@ std::string Node::toString()
 	* 	 0 - if node has no attributes or doesn't match
 	* 	-1 - if invalid identifier is supplied, such as one containing more than one IDs
 	*/
-int Node::matches(SelectorPair& selPair)
+int Node::matches(const SelectorPair& selPair)
 {
 	if (!attributes) return 0;
 
@@ -68,10 +68,17 @@ int Node::matches(SelectorPair& selPair)
 		return selPair.first == id && selPair.second == util::tokenize(classNamesStr, ' ');
 }
 
-void Node::forEachChild(void(*lambda)(Node*))
+void Node::forEachChild(std::function<void(const Node* child)>& lambda) const
 {
 	if (children != nullptr)
 		for (auto child : *children) lambda(child);
+}
+
+void Node::forEachAttribute(std::function<void(const std::string&, const std::string&)>& lambda) const
+{
+	if (attributes != nullptr)
+		for (auto itr : *attributes)
+			lambda(itr.first, itr.second);
 }
 
 } // namespace dom

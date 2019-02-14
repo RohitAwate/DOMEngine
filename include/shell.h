@@ -18,11 +18,11 @@ public:
 
 	void start();
 private:
-	void resolveCmd(std::string& cmd);
+	void resolveCmd(std::string& cmd) const;
 
-	void resolveSubCmd(std::string& subCmd, Node* selected);
+	void resolveSubCmd(std::string& subCmd, Node* selected) const;
 
-	void startSubCmdLoop(Node* selected);
+	void startSubCmdLoop(Node* selected) const;
 };
 
 } // namespace dom
