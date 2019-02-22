@@ -18,6 +18,7 @@ set(SRC
 	src/tree.cpp
 	src/parser.cpp
 	src/util.cpp
+	src/interpreter.cpp
 	src/shell.cpp
 )
 

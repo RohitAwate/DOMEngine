@@ -1,10 +1,9 @@
 #ifndef SHELL_H
 #define SHELL_H
 
-#include <regex>
-
 #include "node.h"
 #include "tree.h"
+#include "interpreter.h"
 
 namespace dom {
 
@@ -12,16 +11,12 @@ namespace dom {
 	{
 	private:
 		Tree* dtree;
-		const static std::regex SELECTOR_CMD_FORMAT;
+		Interpreter* interpreter;
 	public:
 		Shell(Tree* _dtree);
 
 		void start();
 	private:
-		void resolveCmd(std::string& cmd) const;
-
-		void resolveSubCmd(std::string& subCmd, Node* selected) const;
-
 		void startSubCmdLoop(Node* selected) const;
 	};
 

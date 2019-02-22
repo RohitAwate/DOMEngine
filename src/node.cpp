@@ -68,6 +68,9 @@ namespace dom {
 			classNamesStr = util::mapGet<std::string, std::string>(*attributes, "class");
 		}
 
+		if (selector.id.empty() && selector.classNames.empty() && selector.type.empty())
+			return false;
+
 		bool result = true;
 		if (!selector.id.empty())
 			result &= selector.id == id;

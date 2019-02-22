@@ -8,7 +8,10 @@
 
 namespace dom {
 
-    Shell::Shell(Tree* _dtree) : dtree(_dtree){}
+    Shell::Shell(Tree* _dtree) : dtree(_dtree)
+    {
+        this->interpreter = new Interpreter(_dtree);
+    }
 
     void Shell::start()
     {
@@ -30,34 +33,15 @@ namespace dom {
             if (cmd.empty()) continue;
             if (cmd == "exit") break;
                 
-            if (cmd == "print")
+            if (cmd[0] == '$')
             {
-                dtree->print();
-                continue;
-            }
-
-            resolveCmd(cmd);
-        }
-    }
-
-    void Shell::resolveCmd(std::string& cmd) const
-    {
-        if (cmd[0] == '$')
-        {
-            // Check if first function call matches the selector command format
-            if (regex_match(cmd.substr(0, cmd.find_first_of(')') + 1), SELECTOR_CMD_FORMAT))
-            {
-                std::string selector = cmd.substr(3, cmd.find_first_of(')') - 4);
-                auto matchedNode = dtree->match(selector);
+                Node* matchedNode = interpreter->select(cmd);
                 if (matchedNode) startSubCmdLoop(matchedNode);
-                else Log("No match found: " << selector);
+                else Log("No match found.");
             }
-            else Log("Invalid syntax: " << cmd);
+            else interpreter->resolveCmd(cmd);
         }
-        else Log("Unknown command: " << cmd);
     }
-
-    const std::regex Shell::SELECTOR_CMD_FORMAT{R"(\$\(".*"\))"};
 
     void Shell::startSubCmdLoop(Node* selected) const
     {
@@ -73,41 +57,8 @@ namespace dom {
             if (subCmd == "return") return;
             if (subCmd == "exit") std::exit(0);
 
-            resolveSubCmd(subCmd, selected);
+            interpreter->resolveSubCmd(subCmd, selected);
         }
-    }
-
-    void Shell::resolveSubCmd(std::string& subCmd, Node* selected) const
-    {
-        if (subCmd == "parent")
-        {
-            auto parent = selected->getParent();
-            if (parent == nullptr)
-            {
-                Log("Root node has no parent.");
-                return;
-            }
-
-            Log(selected->getParent()->toString());
-        }
-        else if (subCmd == "children")
-        {
-            std::function<void(const Node* child)> lambda = [](const Node* child) {
-                Log("- " << child->toString());
-            };
-
-            selected->forEachChild(lambda);
-        }
-        else if (subCmd == "attrs")
-        {
-            std::function<void(const std::string&, const std::string&)> lambda = 
-                [](const std::string& key, const std::string& value) {
-                    std::cout << key << ": " << value << std::endl;
-                };
-
-            selected->forEachAttribute(lambda);
-        }
-        else Log("Unknown sub-command: " << subCmd);
     }
 
 } // namespace dom
