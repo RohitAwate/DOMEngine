@@ -8,22 +8,22 @@
 
 namespace dom {
 
-class Shell
-{
-private:
-	Tree* dtree;
-	const static std::regex SELECTOR_CMD_FORMAT;
-public:
-	Shell(Tree* _dtree);
+	class Shell
+	{
+	private:
+		Tree* dtree;
+		const static std::regex SELECTOR_CMD_FORMAT;
+	public:
+		Shell(Tree* _dtree);
 
-	void start();
-private:
-	void resolveCmd(std::string& cmd) const;
+		void start();
+	private:
+		void resolveCmd(std::string& cmd) const;
 
-	void resolveSubCmd(std::string& subCmd, Node* selected) const;
+		void resolveSubCmd(std::string& subCmd, Node* selected) const;
 
-	void startSubCmdLoop(Node* selected) const;
-};
+		void startSubCmdLoop(Node* selected) const;
+	};
 
 } // namespace dom
 

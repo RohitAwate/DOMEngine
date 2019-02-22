@@ -8,47 +8,47 @@
 
 namespace dom {
 
-typedef std::pair<std::string, std::vector<std::string>> SelectorPair;
+	typedef std::pair<std::string, std::vector<std::string>> SelectorPair;
 
-class Node
-{
-private:
-    std::string type;
-    std::string innerHTML;
-    Node *parent;
-    std::vector<Node*> *children;
-    std::map<std::string, std::string> *attributes;
+	class Node
+	{
+	private:
+		std::string type;
+		std::string innerHTML;
+		Node *parent;
+		std::vector<Node*> *children;
+		std::map<std::string, std::string> *attributes;
 
-    friend class Tree;
-    friend class Parser;
-public:
-	Node(const std::string& stype);
+		friend class Tree;
+		friend class Parser;
+	public:
+		Node(const std::string& stype);
 
-	std::string& getInnerHTML();
+		std::string& getInnerHTML();
 
-	void setInnerHTML(const std::string& innerHTML);
+		void setInnerHTML(const std::string& innerHTML);
 
-	Node* getParent();
+		Node* getParent();
 
-	void setParent(Node* parent);
+		void setParent(Node* parent);
 
-	void appendChild(Node* child);
+		void appendChild(Node* child);
 
-	std::string toString() const;
+		std::string toString() const;
 
-	/*
-	 *	Parses the identifier and compares it with the ID and class of the node.
-	 * 	Returns:
-	 * 	 1 - if match found
-	 * 	 0 - if node has no attributes or doesn't match
-	 * 	-1 - if invalid identifier is supplied, such as one containing more than one IDs
-	 */
-	int matches(const SelectorPair& selPair);
+		/*
+		*	Parses the identifier and compares it with the ID and class of the node.
+		* 	Returns:
+		* 	 1 - if match found
+		* 	 0 - if node has no attributes or doesn't match
+		* 	-1 - if invalid identifier is supplied, such as one containing more than one IDs
+		*/
+		int matches(const SelectorPair& selPair);
 
-	void forEachChild(std::function<void(const Node* child)>& lambda) const;
+		void forEachChild(std::function<void(const Node* child)>& lambda) const;
 
-	void forEachAttribute(std::function<void(const std::string&, const std::string&)>& lambda) const;
-};
+		void forEachAttribute(std::function<void(const std::string&, const std::string&)>& lambda) const;
+	};
 
 } // namespace dom
 

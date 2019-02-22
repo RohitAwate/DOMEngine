@@ -5,27 +5,27 @@
 
 namespace dom {
 
-class Tree
-{
-private:
-	Node* root;
-public:
-	Tree(Node* root_);
+	class Tree
+	{
+	private:
+		Node* root;
+	public:
+		Tree(Node* root_);
 
-	Node* match(std::string& identifier);
+		Node* match(std::string& identifier);
 
-	void print();
+		void print();
 
-	bool isBuilt();
-private:
-	static std::string generateTreePrefix(std::string prefix, bool isTail);
+		bool isBuilt();
+	private:
+		static std::string generateTreePrefix(std::string prefix, bool isTail);
 
-	static void print(Node* current, std::string prefix, bool isTail);
+		static void print(Node* current, std::string prefix, bool isTail);
 
-	static SelectorPair tokenizeSelector(std::string& selector);
+		static SelectorPair tokenizeSelector(std::string& selector);
 
-	Node* match(Node* node, SelectorPair& selPair);
-};
+		Node* match(Node* node, SelectorPair& selPair);
+	};
 
 } // namespace dom
 

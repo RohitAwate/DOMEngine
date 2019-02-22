@@ -9,17 +9,17 @@
 
 namespace util {
     
-std::vector<std::string> tokenize(std::string in, char delim);
+    std::vector<std::string> tokenize(std::string in, char delim);
 
-void readLine(std::string& line);
+    void readLine(std::string& line);
 
-template <typename K, typename V>
-V mapGet(std::map<K, V>& m, K key)
-{
-    auto itr = m.find(key);
-    if (itr != m.end()) return itr->second;
-    else return "";
-}
+    template <typename K, typename V>
+    V mapGet(std::map<K, V>& m, K key)
+    {
+        auto itr = m.find(key);
+        if (itr != m.end()) return itr->second;
+        else return "";
+    }
 
 } // namespace util
 

@@ -8,16 +8,16 @@
 
 namespace dom {
 
-class Parser
-{
-private:
-	char* filename;
-	std::ifstream fd;
-public:
-	Parser(char* fname);
+	class Parser
+	{
+	private:
+		char* filename;
+		std::ifstream fd;
+	public:
+		Parser(char* fname);
 
-	Tree* parse();
-};
+		Tree* parse();
+	};
 
 }   // namespace dom
 
