@@ -15,18 +15,18 @@ namespace dom {
 		performs a recursive depth-first traversal of the tree
 		and returns the first node that matches the selector.
 	*/
-	Node* Tree::match(Node* node, SelectorPair& selPair)
+	Node* Tree::match(Node* node, Selector& selector)
 	{
-		if (node->matches(selPair)) return node;
+		if (node->matches(selector)) return node;
 
 		if (node->children)
 		{
 			for (auto child : *(node)->children)
 			{
-				if (child->matches(selPair)) return child;
+				if (child->matches(selector)) return child;
 				else
 				{
-					auto matchedChild = match(child, selPair);
+					auto matchedChild = match(child, selector);
 					if (matchedChild != nullptr) return matchedChild;
 				}
 			}
@@ -38,8 +38,8 @@ namespace dom {
 	// Returns the first node in the tree that matches the given identifier
 	Node* Tree::match(std::string& selector)
 	{
-		SelectorPair pair = tokenizeSelector(selector);
-		return match(this->root, pair);
+		Selector sel = tokenizeSelector(selector);
+		return match(this->root, sel);
 	}
 
 	void Tree::print()
@@ -101,16 +101,17 @@ namespace dom {
 	}
 
 	/*
-		Tokenizes the selector and returns a SelectorPair which
-		contains the ID and the class names.
+		Tokenizes the selector and returns a Selector object which
+		contains the type, ID and the classes.
 
-		If a selector contains multiple IDs, only the first one is considered.
+		If a selector contains multiple IDs or types, only the first ones are considered.
 	*/
-	SelectorPair Tree::tokenizeSelector(std::string& selector)
+	Selector Tree::tokenizeSelector(std::string& selector)
 	{
 		int len = selector.length();
 		int curr = 0;
 
+		std::string argType;
 		std::string argId;
 		std::vector<std::string> argClassNames;
 		char ch;
@@ -122,7 +123,7 @@ namespace dom {
 				curr++;
 				int start = curr;
 
-				while (selector[curr] != '.' && selector[curr] != '#' && curr < len) curr++;
+				while (selector[curr] != '.' && selector[curr] != '#' && selector[curr] != '@' && curr < len) curr++;
 
 				argClassNames.push_back(selector.substr(start, curr - start));
 			}
@@ -131,18 +132,26 @@ namespace dom {
 				curr++;
 				int start = curr;
 
-				while (selector[curr] != '.' && selector[curr] != '#' && curr < len) curr++;
+				while (selector[curr] != '.' && selector[curr] != '#' && selector[curr] != '@' && curr < len) curr++;
 
 				if (argId != "") continue;	// Only matching the first ID
 				argId = selector.substr(start, curr - start);
 			}
+			else if (ch == '@')
+			{
+				curr++;
+				int start = curr;
+
+				while (selector[curr] != '.' && selector[curr] != '#' && selector[curr] != '@' && curr < len) curr++;
+
+				if (argType != "") continue;	// Only matching the first type
+				argType = selector.substr(start, curr - start);
+			}
 			else curr++;
 		}
 
-		SelectorPair pair;
-		pair.first = argId;
-		pair.second = argClassNames;
-		return pair;
+		Selector sel { argType, argId, argClassNames };
+		return sel;
 	}
 
 } // namespace dom

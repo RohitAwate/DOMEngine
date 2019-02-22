@@ -6,6 +6,21 @@
 
 namespace dom {
 
+	std::string Selector::toString() const
+	{
+		std::ostringstream out;
+		
+		if (!type.empty())
+			out << "@" << type;
+		if (!id.empty())
+			out << "#" << id;
+		if (!classNames.empty())
+			for (auto className: classNames)
+				out << "." << className;
+
+		return out.str();
+	}
+
 	Node::Node(const std::string& stype) : type(stype), parent(nullptr), attributes(nullptr) {}
 
 	std::string& Node::getInnerHTML() { return innerHTML; }
@@ -43,35 +58,34 @@ namespace dom {
 		return out.str();
 	}
 
-	/*
-		*	Parses the identifier and compares it with the ID and class of the node.
-		* 	Returns:
-		* 	 1 - if match found
-		* 	 0 - if node has no attributes or doesn't match
-		* 	-1 - if invalid identifier is supplied, such as one containing more than one IDs
-		*/
-	int Node::matches(const SelectorPair& selPair)
+	// Parses the identifier and compares it with the type, ID and classes of the node.
+	bool Node::matches(const Selector& selector)
 	{
-		if (!attributes) return 0;
+		std::string id, classNamesStr;
+		if (attributes)
+		{
+			id = util::mapGet<std::string, std::string>(*attributes, "id");
+			classNamesStr = util::mapGet<std::string, std::string>(*attributes, "class");
+		}
 
-		auto id = util::mapGet<std::string, std::string>(*attributes, "id");
-		auto classNamesStr = util::mapGet<std::string, std::string>(*attributes, "class");
+		bool result = true;
+		if (!selector.id.empty())
+			result &= selector.id == id;
 
-		if (selPair.first.empty())
-			// No ID in identifier, compare only on class
-			return selPair.second == util::tokenize(classNamesStr, ' ');
-		else if (selPair.second.empty())
-			// No classes in identifier, compare only ID
-			return selPair.first == id;
-		else
-			// Compare both
-			return selPair.first == id && selPair.second == util::tokenize(classNamesStr, ' ');
+		if (!selector.type.empty())
+			result &= selector.type == type;
+
+		if (!selector.classNames.empty())
+			result &= selector.classNames == util::tokenize(classNamesStr, ' ');
+
+		return result;
 	}
 
 	void Node::forEachChild(std::function<void(const Node* child)>& lambda) const
 	{
 		if (children != nullptr)
-			for (auto child : *children) lambda(child);
+			for (auto child : *children)
+				lambda(child);
 	}
 
 	void Node::forEachAttribute(std::function<void(const std::string&, const std::string&)>& lambda) const

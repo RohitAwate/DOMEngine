@@ -27,6 +27,7 @@ namespace dom {
             std::cout << "> ";
             util::readLine(cmd);
 
+            if (cmd.empty()) continue;
             if (cmd == "exit") break;
                 
             if (cmd == "print")
@@ -68,6 +69,7 @@ namespace dom {
             std::cout << ".. > ";
             util::readLine(subCmd);
 
+            if (subCmd.empty()) continue;
             if (subCmd == "return") return;
             if (subCmd == "exit") std::exit(0);
 
@@ -100,7 +102,7 @@ namespace dom {
         {
             std::function<void(const std::string&, const std::string&)> lambda = 
                 [](const std::string& key, const std::string& value) {
-                    std::cout << "- " << key << ": " << value << std::endl;
+                    std::cout << key << ": " << value << std::endl;
                 };
 
             selected->forEachAttribute(lambda);

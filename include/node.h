@@ -8,7 +8,14 @@
 
 namespace dom {
 
-	typedef std::pair<std::string, std::vector<std::string>> SelectorPair;
+	struct Selector
+	{
+		std::string type;
+		std::string id;
+		std::vector<std::string> classNames;
+
+		std::string toString() const;
+	};
 
 	class Node
 	{
@@ -35,15 +42,8 @@ namespace dom {
 		void appendChild(Node* child);
 
 		std::string toString() const;
-
-		/*
-		*	Parses the identifier and compares it with the ID and class of the node.
-		* 	Returns:
-		* 	 1 - if match found
-		* 	 0 - if node has no attributes or doesn't match
-		* 	-1 - if invalid identifier is supplied, such as one containing more than one IDs
-		*/
-		int matches(const SelectorPair& selPair);
+		
+		bool matches(const Selector& selector);
 
 		void forEachChild(std::function<void(const Node* child)>& lambda) const;
 

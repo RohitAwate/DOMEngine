@@ -22,9 +22,9 @@ namespace dom {
 
 		static void print(Node* current, std::string prefix, bool isTail);
 
-		static SelectorPair tokenizeSelector(std::string& selector);
+		static Selector tokenizeSelector(std::string& selector);
 
-		Node* match(Node* node, SelectorPair& selPair);
+		Node* match(Node* node, Selector& selPair);
 	};
 
 } // namespace dom
