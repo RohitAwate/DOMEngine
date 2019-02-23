@@ -1,18 +1,30 @@
 #include <iostream>
 #include "engine.h"
 
-int main(int argc, char* argv[])
+int main(int argc, char *argv[])
 {
-	if (argc != 2)
+	if (argc == 2)
 	{
-		std::cout << "Input file not provided." << std::endl;
-		std::cout << "Usage: dom-engine <filename>" << std::endl;
+		dom::Parser parser(argv[1]);
+		dom::Tree *dtree = parser.parse();
+
+		dom::Shell *shell = new dom::Shell(dtree);
+		shell->start();
+	}
+	else if (argc == 3)
+	{
+		dom::Parser parser(argv[1]);
+		dom::Tree *dtree = parser.parse();
+
+		dom::ScriptRunner runner(argv[2]);
+		runner.run();
+	}
+	else
+	{
+		std::cout << "Invalid or no arguments supplied." << std::endl;
+		std::cout << "\nUsage:" << std::endl;
+		std::cout << "For interactive shell:\ndom-engine <html-file>" << std::endl;
+		std::cout << "\nFor executing scripts:\ndom-engine <html-file> <script-file>" << std::endl;
 		return 1;
 	}
-
-	dom::Parser parser(argv[1]);
-	dom::Tree* dtree = parser.parse();
-
-	dom::Shell* shell = new dom::Shell(dtree);
-	shell->start();
 }

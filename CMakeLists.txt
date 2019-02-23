@@ -19,6 +19,7 @@ set(SRC
 	src/parser.cpp
 	src/util.cpp
 	src/interpreter.cpp
+	src/script.cpp
 	src/shell.cpp
 )
 
