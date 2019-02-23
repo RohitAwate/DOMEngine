@@ -30,7 +30,7 @@ Parser::Parser(char* fname) : filename(fname) {}
             len = line.length();
             while (curr < len)
             {
-                // Traverse to first non-blank character
+                // Skip whitespace
                 while (std::isspace(line[curr])) { curr++; }
 
                 // Identify closing tag

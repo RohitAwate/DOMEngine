@@ -4,15 +4,30 @@
 #include <iostream>
 #include <vector>
 
+#include "tree.h"
+#include "interpreter.h"
+
 namespace dom
 {
     
     class ScriptRunner
     {
     private:
+        Tree* dtree;
+        Interpreter interpreter;
         std::vector<std::string> src;
+
+        struct ScriptCommand
+        {
+            std::string cmd;
+            std::vector<std::string>* subCmds;
+        };
+
+        std::vector<ScriptCommand*>* commands;
+
+        int parse();
     public:
-        ScriptRunner(char* scriptSrc);
+        ScriptRunner(Tree* _dtree, char* scriptSrc);
 
         int run();
     };

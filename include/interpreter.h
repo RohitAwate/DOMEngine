@@ -17,8 +17,6 @@ namespace dom
         const static std::regex SELECTOR_CMD_FORMAT;
     public:
         Interpreter(Tree* _dtree);
-
-        bool runScript(std::string& scriptSrc) const;
     
         Node* select(std::string& selectStr) const;
         

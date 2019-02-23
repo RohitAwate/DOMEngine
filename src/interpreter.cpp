@@ -7,20 +7,6 @@ namespace dom {
 
     Interpreter::Interpreter(Tree* _dtree) : dtree(_dtree) {}
 
-    bool Interpreter::runScript(std::string& scriptSrc) const
-    {
-        std::ifstream fd(scriptSrc);
-
-        std::string line;
-        while (std::getline(fd, line))
-        {
-            Log(line);
-        }
-
-        fd.close();
-        return true;
-    }
-
     void Interpreter::resolveCmd(std::string& cmd) const
     {
         if (cmd == "print") dtree->print();

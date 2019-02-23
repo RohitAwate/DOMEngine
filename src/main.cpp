@@ -16,7 +16,7 @@ int main(int argc, char *argv[])
 		dom::Parser parser(argv[1]);
 		dom::Tree *dtree = parser.parse();
 
-		dom::ScriptRunner runner(argv[2]);
+		dom::ScriptRunner runner(dtree, argv[2]);
 		runner.run();
 	}
 	else
