@@ -21,6 +21,25 @@ namespace util {
         return tokens;
     }
 
+    std::vector<std::string> tokenizeWhitespace(std::string in)
+    {
+        std::vector<std::string> tokens;
+
+        int curr = 0;
+        int len = in.length();
+        int start;
+        while (curr < len)
+        {
+            while (curr < len && std::isspace(in[curr])) curr++;
+            start = curr;
+            
+            while (curr < len && !std::isspace(in[curr])) curr++;
+            tokens.push_back(in.substr(start, curr-start));
+        }
+
+        return tokens;
+    }
+
     void readLine(std::string& line)
     {
         std::cin >> line;

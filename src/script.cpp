@@ -84,6 +84,7 @@ namespace dom
                     selector.clear();
                     bracesPaired = true;
                 }
+
                 // Command
                 else
                 {
@@ -92,16 +93,10 @@ namespace dom
                     std::string cmd = line.substr(start, curr-start);
 
                     if (selector.empty())
-                    {
                         commands->push_back(new ScriptCommand{cmd, nullptr});
-                    }
                     else
-                    {
                         subCmds->push_back(cmd);
-                    }
-                    
                 }
-
                 curr++;
             }
         }

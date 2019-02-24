@@ -11,6 +11,8 @@ namespace util {
     
     std::vector<std::string> tokenize(std::string in, char delim);
 
+    std::vector<std::string> tokenizeWhitespace(std::string in);
+
     void readLine(std::string& line);
 
     template <typename K, typename V>
