@@ -12,57 +12,60 @@ namespace dom
         std::ifstream fd(scriptSrc);
 
         std::string line;
-        while (std::getline(fd, line)) this->src.push_back(line);
+        while (std::getline(fd, line))
+        {
+            cleanSource(line);
+            this->src.push_back(line);
+        }
 
         fd.close();
     }
-    
+
+    /*
+        Generates a stream of tokens by eliminating whitespaces which
+        are then parsed into a vector of ScriptCommand objects.
+    */
     int ScriptRunner::parse()
     {
-        char curr;
-        int len;
+        if (src.empty()) return -1;
 
         commands = new std::vector<ScriptCommand*>();
-        std::string selector;
+        std::string pendingSelector;
+        std::string pendingCmd;
         std::vector<std::string>* subCmds;
         bool bracesPaired = true;
+        bool semicolonFound = true;
 
-        for (std::string line: src)
+        for (std::string line : src)
         {
-            len = line.length();
-            curr = 0;
-
-            while (curr < len)
+            auto tokens = util::tokenizeWhitespace(line);
+            
+            for (std::string token: tokens)
             {
-                // Skip whitespace
-                while (curr < len && std::isspace(line[curr])) { curr++; }
-
-                /*
-                    Selector
-
-                    Selector is set as 'selector' and all further commands
-                    are added as its subcommands until a closing brace is encountered.
-                */
-                if (line[curr] == '$')
+                Log(token);
+                // Selector
+                if (token[0] == '$')
                 {
-                    int start = curr;
-
-                    while (curr < len && line[curr] != ')') curr++;
-                    if (!selector.empty())
+                    if (!pendingSelector.empty())
                     {
                         Log("Nested selectors not allowed.");
                         return -1;
                     }
 
-                    std::string cmd = line.substr(start, curr-start+1);
-                    selector = cmd;
+                    if (!pendingCmd.empty() && !semicolonFound)
+                    {
+                        Log("Syntax error: Selector not allowed here.");
+                        return -1;
+                    }
+
+                    pendingSelector = token;
                     subCmds = new std::vector<std::string>();
                 }
 
                 // Opening brace
-                else if (line[curr] == '{')
+                else if (token[0] == '{')
                 {
-                    if (!bracesPaired || selector.empty())
+                    if (!bracesPaired || pendingSelector.empty())
                     {
                         Log("Syntax error: Stray '{'");
                         return -1;
@@ -72,36 +75,118 @@ namespace dom
                 }
 
                 // Closing brace
-                else if (line[curr] == '}')
+                else if (token[0] == '}')
                 {
-                    if (bracesPaired || selector.empty())
+                    if (bracesPaired || pendingSelector.empty())
                     {
                         Log("Syntax error: Stray '}'");
                         return -1;
                     }
 
-                    commands->push_back(new ScriptCommand{selector, subCmds});
-                    selector.clear();
+                    commands->push_back(new ScriptCommand{pendingSelector, subCmds});
+                    pendingSelector.clear();
                     bracesPaired = true;
+                }
+
+                // Semi-colon
+                else if (token[0] == ';')
+                {
+                    if (semicolonFound)
+                    {
+                        Log("Syntax error: Stray ';'");
+                        return -1;
+                    }
+                    else
+                    {
+                        semicolonFound = true;
+                        if (pendingSelector.empty())
+                            commands->push_back(new ScriptCommand{pendingCmd, nullptr});
+                        else
+                            subCmds->push_back(pendingCmd);
+                    }
                 }
 
                 // Command
                 else
                 {
-                    int start = curr;
-                    while (curr < len && line[curr] != ';') curr++;
-                    std::string cmd = line.substr(start, curr-start);
+                    // Check if command ends in semicolon
+                    if (token[token.length() - 1] != ';')
+                    {
+                        semicolonFound = false;
+                        pendingCmd = token;
+                        continue;
+                    }
 
-                    if (selector.empty())
-                        commands->push_back(new ScriptCommand{cmd, nullptr});
+                    // Remove semi-colon
+                    auto tokenTrunc = token.substr(0, token.length() - 1);
+                    if (pendingSelector.empty())
+                        commands->push_back(new ScriptCommand{tokenTrunc, nullptr});
                     else
-                        subCmds->push_back(cmd);
+                        subCmds->push_back(tokenTrunc);
                 }
-                curr++;
             }
         }
-
+        
         return 1;
+    }
+
+    /*
+        Inserts spaces at appropriate locations in the string
+        to make it easier for tokenization.
+
+        Spaces are inserted:
+        - before $
+        - after ; and )
+        - before and after { and }
+    */
+    void ScriptRunner::cleanSource(std::string& line)
+    {
+        int curr, len;
+        char space = 32;
+
+        curr = 0;
+        len = line.length();
+        while (curr < len)
+        {
+            // Before
+            if (line[curr] == '$' && curr-1 >= 0)
+            {
+                line.insert(curr-1, 1, space);
+                len++;
+                curr += 2;
+                continue;
+            }
+
+            // After
+            else if (line[curr] == ';' || line[curr] == ')')
+            {
+                line.insert(curr+1, 1, space);
+                len++;
+                curr += 2;
+                continue;
+            }
+
+            // Both
+            else if (line[curr] == '{' || line[curr] == '}')
+            {
+                if (curr-1 >= 0) 
+                {
+                    line.insert(curr-1, 1, space);
+                    line.insert(curr+2, 1, space);
+                    len += 2;
+                    curr += 3;
+                }
+                else
+                {
+                    line.insert(curr+1, 1, space);
+                    len++;
+                    curr += 2;
+                }
+                continue;
+            }
+
+            curr++;
+        }
     }
 
     int ScriptRunner::run()

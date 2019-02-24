@@ -15,12 +15,23 @@ namespace util {
 
     void readLine(std::string& line);
 
+    bool isBlank(std::string& str);
+
     template <typename K, typename V>
     V mapGet(std::map<K, V>& m, K key)
     {
         auto itr = m.find(key);
         if (itr != m.end()) return itr->second;
         else return "";
+    }
+
+    template <typename T>
+    bool vectorContains(std::vector<T>& vec, T key)
+    {
+        for (auto k : vec)
+            if (k == key) return true;
+
+        return false;
     }
 
 } // namespace util

@@ -26,6 +26,8 @@ namespace dom
         std::vector<ScriptCommand*>* commands;
 
         int parse();
+
+        void cleanSource(std::string& line);
     public:
         ScriptRunner(Tree* _dtree, char* scriptSrc);
 

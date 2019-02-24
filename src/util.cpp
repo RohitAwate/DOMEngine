@@ -21,6 +21,11 @@ namespace util {
         return tokens;
     }
 
+    bool isBlank(std::string& str)
+    {
+        return str.find_first_not_of(' ') == std::string::npos;
+    }
+
     std::vector<std::string> tokenizeWhitespace(std::string in)
     {
         std::vector<std::string> tokens;
@@ -28,13 +33,16 @@ namespace util {
         int curr = 0;
         int len = in.length();
         int start;
+        std::string token;
         while (curr < len)
         {
             while (curr < len && std::isspace(in[curr])) curr++;
             start = curr;
             
             while (curr < len && !std::isspace(in[curr])) curr++;
-            tokens.push_back(in.substr(start, curr-start));
+            token = in.substr(start, curr-start);
+            if (!isBlank(token))
+                tokens.push_back(token);
         }
 
         return tokens;
