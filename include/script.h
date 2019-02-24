@@ -27,7 +27,7 @@ namespace dom
 
         int parse();
 
-        void cleanSource(std::string& line);
+        static void cleanSource(std::string& line);
     public:
         ScriptRunner(Tree* _dtree, char* scriptSrc);
 
@@ -36,5 +36,6 @@ namespace dom
 
 } // namespace dom
 
+void logSyntaxError(std::string);
 
 #endif  // SCRIPT_H

@@ -42,19 +42,18 @@ namespace dom
             
             for (std::string token: tokens)
             {
-                Log(token);
                 // Selector
                 if (token[0] == '$')
                 {
                     if (!pendingSelector.empty())
                     {
-                        Log("Nested selectors not allowed.");
+                        logSyntaxError("Nested selectors not allowed");
                         return -1;
                     }
 
                     if (!pendingCmd.empty() && !semicolonFound)
                     {
-                        Log("Syntax error: Selector not allowed here.");
+                        logSyntaxError("Semi-colon missing for command: " + pendingCmd);
                         return -1;
                     }
 
@@ -67,7 +66,7 @@ namespace dom
                 {
                     if (!bracesPaired || pendingSelector.empty())
                     {
-                        Log("Syntax error: Stray '{'");
+                        logSyntaxError("Stray '{'");
                         return -1;
                     }
 
@@ -79,7 +78,7 @@ namespace dom
                 {
                     if (bracesPaired || pendingSelector.empty())
                     {
-                        Log("Syntax error: Stray '}'");
+                        logSyntaxError("Stray '}'");
                         return -1;
                     }
 
@@ -93,7 +92,7 @@ namespace dom
                 {
                     if (semicolonFound)
                     {
-                        Log("Syntax error: Stray ';'");
+                        logSyntaxError("Stray ';'");
                         return -1;
                     }
                     else
@@ -109,6 +108,12 @@ namespace dom
                 // Command
                 else
                 {
+                    if (!semicolonFound && !pendingCmd.empty())
+                    {
+                        logSyntaxError("Semi-colon missing for command: " + pendingCmd);
+                        return -1;
+                    }
+
                     // Check if command ends in semicolon
                     if (token[token.length() - 1] != ';')
                     {
@@ -125,6 +130,18 @@ namespace dom
                         subCmds->push_back(tokenTrunc);
                 }
             }
+        }
+
+        if (!semicolonFound)
+        {
+            logSyntaxError("Semi-colon missing for command: " + pendingCmd);
+            return -1;
+        }
+
+        if (!bracesPaired)
+        {
+            logSyntaxError("Braces not paired for selector: " + pendingSelector);
+            return -1;
         }
         
         return 1;
@@ -151,7 +168,7 @@ namespace dom
             // Before
             if (line[curr] == '$' && curr-1 >= 0)
             {
-                line.insert(curr-1, 1, space);
+                line.insert(curr, 1, space);
                 len++;
                 curr += 2;
                 continue;
@@ -165,16 +182,16 @@ namespace dom
                 curr += 2;
                 continue;
             }
-
+            
             // Both
             else if (line[curr] == '{' || line[curr] == '}')
             {
                 if (curr-1 >= 0) 
                 {
-                    line.insert(curr-1, 1, space);
+                    line.insert(curr, 1, space);
                     line.insert(curr+2, 1, space);
                     len += 2;
-                    curr += 3;
+                    curr += 2;
                 }
                 else
                 {
@@ -184,7 +201,6 @@ namespace dom
                 }
                 continue;
             }
-
             curr++;
         }
     }
@@ -222,5 +238,9 @@ namespace dom
         return 1;
     }
 
-
 } // namespace dom
+
+void logSyntaxError(std::string msg)
+{
+    Log(COLOR_RED << "[Syntax Error] " << COLOR_RESET << msg);
+}
