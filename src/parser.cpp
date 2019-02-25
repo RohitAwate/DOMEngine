@@ -5,160 +5,83 @@
 
 namespace dom {
 
-Parser::Parser(char* fname) : filename(fname) {}
-
-    Tree* Parser::parse()
+    Parser::Parser(char* htmlSrc)
     {
-        fd.open(filename);
-        if (!fd.good())
-        {
-            Log("Could not open file: " << filename);
-            return nullptr;
-        }
+        std::ifstream fd(htmlSrc);
 
         std::string line;
-        std::stack<std::string> stack;
-        int curr, len;
-        std::string windowType = "window";
-        Node* root = new Node(windowType);
-        Node* node = root;
         while (std::getline(fd, line))
         {
-            // Initialize curr to first character
-            curr = 0;
+            this->src.push_back(line);
+        }
 
-            len = line.length();
-            while (curr < len)
+        fd.close();
+    }
+
+    // Tokenizes the source line by line and builds a DOM tree.
+    Tree* Parser::parse()
+    {
+        std::stack<std::string> stack;
+        Node* root = new Node("document");
+        Node* node = root;
+        for (std::string line: src)
+        {
+            auto tokens = util::tokenizeTag(line);
+
+            for (std::string token : tokens)
             {
-                // Skip whitespace
-                while (std::isspace(line[curr])) { curr++; }
-
-                // Identify closing tag
-                if (line.substr(curr, 2) == "</")
+                // Tag
+                if (token[0] == '<')
                 {
-                    curr += 2;
-                    int start = curr;
-
-                    /*
-                        Get the tagname.
-                        We'll get the index of '>' so that we can extract the substring
-                        from start to that index, which will yield us the tagname.
-                        */
-                    while (line[curr] != '>') curr++;
-
-                    std::string tag = line.substr(start, curr-start);
-
-                    // If identified, look for opening tag on stack.
-                    // Print error and exit if not found
-                    if (stack.empty() || stack.top() != tag)
+                    // Closing tag
+                    if (token[1] == '/')
                     {
-                        Log("Unclosed tag: </" << stack.top() << ">");
-                        std::exit(1);
-                    }
-                    else // If found, pop the opening tag from stack and add to tree
-                    {
-                        node = node->getParent();
-                        stack.pop();
-                    }
-                }
-                
-                // Skip through comments
-                else if (line.substr(curr, 2) == "<!")
-                    while (line[curr] != '>') curr++;
+                        auto tagName = getTagName(token);
 
-                /*
-                        Else, identify opening tag.
-                        Checking for '<' since there may be just text of an element.
-                */
-                else if (line[curr] == '<')
-                {
-                    curr++;
-                    int start = curr;
-
-                    /*
-                        Get the tagname.
-                        We'll get the index of '>' so that we can extract the substring
-                        from start to that index, which will yield us the tagname.
-                    */
-                    while (line[curr] != '>' && line[curr] != ' ') curr++;
-
-                    // Push opening tag onto stack
-                    std::string tag = line.substr(start, curr-start);
-                    stack.push(tag);
-
-                    // When new opening tag is fully parsed, create a new node and append it as a child of 'node'
-                    Node* newNode = new Node(tag);
-                    node->appendChild(newNode);
-                    node = newNode;
-
-                    /*
-                        Parse attributes.
-                        If preceeding while loop was terminated by a ' ', we check for that here.
-                        This is so because then the element has some attributes.
-                    */
-                    if (line[curr] != '>')
-                    {
-                        int attrStart = ++curr;
-
-                        // Get the index of '>'
-                        while (curr < len && line[curr] != '>') curr++;
-
-                        auto tokens = util::tokenize(line.substr(attrStart, curr-attrStart), ' ');
-
-                        newNode->attributes = new std::map<std::string, std::string>();
-                        for (auto token : tokens)
+                        if (stack.empty() || stack.top() != tagName)
                         {
-                            auto pair = util::tokenize(token, '=');
-                            if (pair.size() == 2)
-                            {
-                                auto val = pair.at(1);
-                                val = val.substr(1, val.length()-2);
-                                (*newNode->attributes)[pair.at(0)] = val;
-                            }
+                            util::logSyntaxError("Stray tag: </" + tagName + ">");
+                            std::exit(1);
+                        }
+                        else
+                        {
+                            // Return to parent and pop from stack
+                            node = node->getParent();
+                            stack.pop();
                         }
                     }
-                }
 
-                // Identify closing tag (if available)
-                while (curr < len && line[curr] != '<') curr++;
+                    // Comment; ignore
+                    else if (token[1] == '!')
+                        continue;
 
-                if (line.substr(curr, 2) == "</")
-                {
-                    curr += 2;
-                    int start = curr;
-
-                    /*
-                        Get the tagname.
-                        We'll get the index of '>' so that we can extract the substring
-                        from start to that index, which will yield us the tagname.
-                        */
-                    while (line[curr] != '>') { curr++; }
-
-                    std::string tag = line.substr(start, curr-start);
-
-                    // If identified, look for opening tag on stack.
-                    // Print error and exit if not found
-                    if (stack.empty() || stack.top() != tag)
+                    // Opening tag
+                    else
                     {
-                        Log("Unclosed tag: </" << stack.top() << ">");
-                        std::exit(1);
-                    }
-                    else // If found, pop the opening tag from stack and add to tree
-                    {
-                        node = node->getParent();
-                        stack.pop();
+                        auto tagName = getTagName(token);
+
+                        // Push onto stack
+                        stack.push(tagName);
+                        
+                        // Create new node and set it as a child of 'node'
+                        Node* newNode = new Node(tagName);
+                        node->appendChild(newNode);
+
+                        // Make newNode as 'node' to add children
+                        node = newNode;
+
+                        // Parse attributes
+                        node->attributes = getAttributes(token);
                     }
                 }
             }
         }
 
-        fd.close();
-
         if (stack.empty())
             return new Tree(root);
         else
         {
-            Log("[Parsing Error] Unpaired tag(s):");
+            util::logSyntaxError("Unpaired tag(s): ");
             while (!stack.empty())
             {
                 Log(" - " << stack.top());
@@ -167,6 +90,39 @@ Parser::Parser(char* fname) : filename(fname) {}
 
             std::exit(1);
         }
+    }
+
+    std::string Parser::getTagName(std::string& tag)
+    {
+        int start;
+        if (tag.length() > 2 && tag.substr(0, 2) == "</")
+            start = 2;
+        else
+            start = 1;
+
+        int curr = start;
+        while (curr < tag.length() && !std::isspace(tag[curr]) && tag[curr] != '>') curr++;
+
+        return tag.substr(start, curr-start);
+    }
+
+    std::map<std::string, std::string>* Parser::getAttributes(std::string& tag)
+    {
+        std::map<std::string, std::string>* pairs = new std::map<std::string, std::string>();
+        auto truncTag = tag.substr(1, tag.length() - 2);
+        auto tokens = util::tokenize(truncTag, 32, true);
+
+        int equalsLoc;
+        std::string token;
+        // Skipping the tagname, hence i starts from 1
+        for (int i = 1; i < tokens.size(); i++)
+        {
+            token = tokens.at(i);
+            equalsLoc = token.find_first_of('=');
+            (*pairs)[token.substr(0, equalsLoc)] = token.substr(equalsLoc + 2, token.length() - equalsLoc - 3);
+        }
+
+        return pairs;
     }
 
 } // namespace dom

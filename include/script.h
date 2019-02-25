@@ -36,6 +36,4 @@ namespace dom
 
 } // namespace dom
 
-void logSyntaxError(std::string);
-
 #endif  // SCRIPT_H

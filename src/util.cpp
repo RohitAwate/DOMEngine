@@ -1,15 +1,22 @@
 #include "util.h"
+#include "style.h"
 
 namespace util {
     
-    std::vector<std::string> tokenize(std::string in, char delim)
+    std::vector<std::string> tokenize(std::string in, char delim, bool stringAware)
     {
         int start = 0;
         std::vector<std::string> tokens;
+        bool quotesPaired = true;
 
         for (int i = 0; i < in.length(); i++)
         {
-            if (in[i] == delim)
+            if (in[i] == '\"' && stringAware)
+            {
+                quotesPaired = !quotesPaired;
+            }
+
+            else if (in[i] == delim && quotesPaired)
             {
                 tokens.push_back(in.substr(start, i-start));
                 start = i+1;
@@ -48,9 +55,78 @@ namespace util {
         return tokens;
     }
 
+    std::vector<std::string> tokenizeTag(std::string in)
+    {
+        std::vector<std::string> tokens;
+
+        int curr = 0;
+        int len = in.length();
+        std::string token;
+        bool tagComplete = true;
+
+        while (curr < len)
+        {
+            // If <, set tagComplete to false.
+            // Add everything to token until >.
+            if (in[curr] == '<')
+            {
+                tagComplete = false;
+                token.append(1, in[curr]);
+            }
+
+            // If >, set tagComplete to true.
+            // Add token to vector.
+            // Clear token.
+            else if (in[curr] == '>')
+            {
+                token.append(1, in[curr]);
+                tagComplete = true;
+                tokens.push_back(token);
+                token.clear();
+            }
+
+            // Handle whitespace based on whether tagComplete is set or not
+            else if (std::isspace(in[curr]))
+            {
+                if (!tagComplete)
+                    token.append(1, in[curr]);
+            }
+            
+            // Handle other characters on the basis of tagComplete
+            else
+            {
+                // For tagname, attributes, etc
+                if (!tagComplete)
+                    token.append(1, in[curr]);
+
+                // For the tag content
+                else
+                {
+                    token.clear();
+                    // Add everything to a separate token until < is found.
+                    while (curr < len && in[curr] != '<')
+                        token.append(1, in[curr++]);
+
+                    tokens.push_back(token);
+                    token.clear();
+                    continue;
+                }
+            }
+            
+            curr++;
+        }
+
+        return tokens;
+    }
+
     void readLine(std::string& line)
     {
         std::cin >> line;
+    }
+
+    void logSyntaxError(std::string msg)
+    {
+        Log(COLOR_RED << "[Syntax Error] " << COLOR_RESET << msg);
     }
 
 } // namespace util

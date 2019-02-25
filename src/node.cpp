@@ -21,7 +21,7 @@ namespace dom {
 		return out.str();
 	}
 
-	Node::Node(const std::string& stype) : type(stype), parent(nullptr), attributes(nullptr) {}
+	Node::Node(const std::string& stype) : type(stype), parent(nullptr), attributes(nullptr), children(nullptr) {}
 
 	std::string& Node::getInnerHTML() { return innerHTML; }
 

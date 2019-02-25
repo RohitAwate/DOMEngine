@@ -8,10 +8,14 @@
 #define Log(x) std::cout << x << std::endl
 
 namespace util {
+
+    void logSyntaxError(std::string);
     
-    std::vector<std::string> tokenize(std::string in, char delim);
+    std::vector<std::string> tokenize(std::string in, char delim, bool stringAware = false);
 
     std::vector<std::string> tokenizeWhitespace(std::string in);
+
+    std::vector<std::string> tokenizeTag(std::string in);
 
     void readLine(std::string& line);
 

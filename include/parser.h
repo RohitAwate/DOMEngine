@@ -11,10 +11,13 @@ namespace dom {
 	class Parser
 	{
 	private:
-		char* filename;
-		std::ifstream fd;
+		std::vector<std::string> src;
+
+		static std::string getTagName(std::string& tag);
+
+		std::map<std::string, std::string>* getAttributes(std::string& tag);
 	public:
-		Parser(char* fname);
+		Parser(char* htmlSrc);
 
 		Tree* parse();
 	};

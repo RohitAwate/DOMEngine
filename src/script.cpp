@@ -47,13 +47,13 @@ namespace dom
                 {
                     if (!pendingSelector.empty())
                     {
-                        logSyntaxError("Nested selectors not allowed");
+                        util::logSyntaxError("Nested selectors not allowed");
                         return -1;
                     }
 
                     if (!pendingCmd.empty() && !semicolonFound)
                     {
-                        logSyntaxError("Semi-colon missing for command: " + pendingCmd);
+                        util::logSyntaxError("Semi-colon missing for command: " + pendingCmd);
                         return -1;
                     }
 
@@ -66,7 +66,7 @@ namespace dom
                 {
                     if (!bracesPaired || pendingSelector.empty())
                     {
-                        logSyntaxError("Stray '{'");
+                        util::logSyntaxError("Stray '{'");
                         return -1;
                     }
 
@@ -78,7 +78,7 @@ namespace dom
                 {
                     if (bracesPaired || pendingSelector.empty())
                     {
-                        logSyntaxError("Stray '}'");
+                        util::logSyntaxError("Stray '}'");
                         return -1;
                     }
 
@@ -92,7 +92,7 @@ namespace dom
                 {
                     if (semicolonFound)
                     {
-                        logSyntaxError("Stray ';'");
+                        util::logSyntaxError("Stray ';'");
                         return -1;
                     }
                     else
@@ -110,7 +110,7 @@ namespace dom
                 {
                     if (!semicolonFound && !pendingCmd.empty())
                     {
-                        logSyntaxError("Semi-colon missing for command: " + pendingCmd);
+                        util::logSyntaxError("Semi-colon missing for command: " + pendingCmd);
                         return -1;
                     }
 
@@ -134,19 +134,19 @@ namespace dom
 
         if (!semicolonFound)
         {
-            logSyntaxError("Semi-colon missing for command: " + pendingCmd);
+            util::logSyntaxError("Semi-colon missing for command: " + pendingCmd);
             return -1;
         }
 
         if (!bracesPaired)
         {
-            logSyntaxError("Braces not paired for selector: " + pendingSelector);
+            util::logSyntaxError("Braces not paired for selector: " + pendingSelector);
             return -1;
         }
 
         if (!pendingSelector.empty())
         {
-            logSyntaxError("Selector block body not found for selector: " + pendingSelector);
+            util::logSyntaxError("Selector block body not found for selector: " + pendingSelector);
             return -1;
         }
         
@@ -245,8 +245,3 @@ namespace dom
     }
 
 } // namespace dom
-
-void logSyntaxError(std::string msg)
-{
-    Log(COLOR_RED << "[Syntax Error] " << COLOR_RESET << msg);
-}
