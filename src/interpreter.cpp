@@ -44,7 +44,9 @@ namespace dom {
         }
         else if (subCmd == "innerhtml")
         {
-            Log(selected->getInnerHTML());
+            auto innerHTML = selected->getInnerHTML();
+            if (!util::isBlank(innerHTML))
+                Log(innerHTML);
         }
 
         else Log("Unknown sub-command: " << subCmd);
