@@ -54,6 +54,7 @@ cd ../bin/
     - `parent` Prints the parent
     - `children` Prints all the children
     - `attrs` Prints all the attributes
+    - `innerhtml` Prints the innerHTML
     - `return` Deselects the node and returns to shell
     <br/>
 - `exit`\

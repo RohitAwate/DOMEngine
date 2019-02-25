@@ -25,8 +25,6 @@ namespace dom {
 
 	std::string& Node::getInnerHTML() { return innerHTML; }
 
-	void Node::setInnerHTML(const std::string& innerHTML) { this->innerHTML = innerHTML; }
-
 	Node* Node::getParent(){ return parent; }
 
 	void Node::setParent(Node* parent) { this->parent = parent; }

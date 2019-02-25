@@ -42,6 +42,11 @@ namespace dom {
 
             selected->forEachAttribute(lambda);
         }
+        else if (subCmd == "innerhtml")
+        {
+            Log(selected->getInnerHTML());
+        }
+
         else Log("Unknown sub-command: " << subCmd);
     }
 

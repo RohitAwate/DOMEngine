@@ -74,6 +74,8 @@ namespace dom {
                         node->attributes = getAttributes(token);
                     }
                 }
+                else    // Appending since the innerHTML may be broken into multiple tokens
+                    node->innerHTML.append(token);
             }
         }
 

@@ -33,8 +33,6 @@ namespace dom {
 
 		std::string& getInnerHTML();
 
-		void setInnerHTML(const std::string& innerHTML);
-
 		Node* getParent();
 
 		void setParent(Node* parent);
