@@ -143,6 +143,12 @@ namespace dom
             logSyntaxError("Braces not paired for selector: " + pendingSelector);
             return -1;
         }
+
+        if (!pendingSelector.empty())
+        {
+            logSyntaxError("Selector block body not found for selector: " + pendingSelector);
+            return -1;
+        }
         
         return 1;
     }
