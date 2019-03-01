@@ -10,10 +10,10 @@ namespace dom {
 	class Shell
 	{
 	private:
-		Tree* dtree;
+		Tree* tree;
 		Interpreter* interpreter;
 	public:
-		Shell(Tree* _dtree);
+		Shell(Tree* tree);
 
 		void start();
 	private:

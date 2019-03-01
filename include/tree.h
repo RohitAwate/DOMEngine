@@ -10,7 +10,7 @@ namespace dom {
 	private:
 		Node* root;
 	public:
-		Tree(Node* root_);
+		Tree(Node* root);
 
 		Node* match(std::string& identifier);
 

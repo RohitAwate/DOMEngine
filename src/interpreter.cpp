@@ -5,11 +5,11 @@ namespace dom {
 
     const std::regex Interpreter::SELECTOR_CMD_FORMAT{R"(\$\(".*"\))"};
 
-    Interpreter::Interpreter(Tree* _dtree) : dtree(_dtree) {}
+    Interpreter::Interpreter(Tree* tree) : tree(tree) {}
 
     void Interpreter::resolveCmd(std::string& cmd) const
     {
-        if (cmd == "print") dtree->print();
+        if (cmd == "print") tree->print();
     }
 
     void Interpreter::resolveSubCmd(std::string& subCmd, Node* selected) const
@@ -58,7 +58,7 @@ namespace dom {
         if (regex_match(cmd.substr(0, cmd.find_first_of(')') + 1), SELECTOR_CMD_FORMAT))
         {
             std::string selector = cmd.substr(3, cmd.find_first_of(')') - 4);
-            return dtree->match(selector);
+            return tree->match(selector);
         }
         else
         {

@@ -8,7 +8,7 @@
 
 namespace dom {
 
-	Tree::Tree(Node* root_) : root(root_) {}
+	Tree::Tree(Node* root) : root(root) {}
 
 	/*
 		Private delegate of dom::Tree::match(std::string) which

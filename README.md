@@ -93,7 +93,7 @@ Save the script in a file with the `.des` extension _(DOM Engine Script)_. <br/>
 Run using: `dom-engine <html-file> script.des`
 
 ## Goals and Progress
-See the Kanban board [here](https://github.com/RohitAwate/DOMEngine/projects/1).
+See the Kanban board [here](https://github.com/RohitAwate/DOMEngine/projects/1?fullscreen=true).
 
 ## License
 MIT

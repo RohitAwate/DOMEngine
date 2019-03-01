@@ -8,14 +8,14 @@
 
 namespace dom {
 
-    Shell::Shell(Tree* _dtree) : dtree(_dtree)
+    Shell::Shell(Tree* tree) : tree(tree)
     {
-        this->interpreter = new Interpreter(_dtree);
+        this->interpreter = new Interpreter(tree);
     }
 
     void Shell::start()
     {
-        if (dtree == nullptr || !dtree->isBuilt())
+        if (tree == nullptr || !tree->isBuilt())
         {
             Log("DOM Tree not built.");
             return;

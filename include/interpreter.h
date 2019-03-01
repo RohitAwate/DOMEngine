@@ -13,10 +13,10 @@ namespace dom
     class Interpreter
     {
     private:
-        Tree* dtree;
+        Tree* tree;
         const static std::regex SELECTOR_CMD_FORMAT;
     public:
-        Interpreter(Tree* _dtree);
+        Interpreter(Tree* tree);
     
         Node* select(std::string& selectStr) const;
         

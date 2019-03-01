@@ -13,7 +13,7 @@ namespace dom
     class ScriptRunner
     {
     private:
-        Tree* dtree;
+        Tree* tree;
         Interpreter interpreter;
         std::vector<std::string> src;
 
@@ -29,7 +29,7 @@ namespace dom
 
         static void cleanSource(std::string& line);
     public:
-        ScriptRunner(Tree* _dtree, char* scriptSrc);
+        ScriptRunner(Tree* tree, char* scriptSrc);
 
         int run();
     };

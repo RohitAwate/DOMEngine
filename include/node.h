@@ -29,7 +29,7 @@ namespace dom {
 		friend class Tree;
 		friend class Parser;
 	public:
-		Node(const std::string& stype);
+		Node(const std::string& type);
 
 		std::string& getInnerHTML();
 

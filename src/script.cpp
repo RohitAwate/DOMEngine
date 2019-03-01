@@ -7,7 +7,7 @@
 namespace dom
 {
 
-    ScriptRunner::ScriptRunner(Tree* _dtree, char* scriptSrc) : dtree(_dtree), interpreter(_dtree)
+    ScriptRunner::ScriptRunner(Tree* tree, char* scriptSrc) : tree(tree), interpreter(tree)
     {
         std::ifstream fd(scriptSrc);
 

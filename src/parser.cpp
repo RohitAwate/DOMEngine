@@ -11,9 +11,7 @@ namespace dom {
 
         std::string line;
         while (std::getline(fd, line))
-        {
             this->src.push_back(line);
-        }
 
         fd.close();
     }
@@ -96,11 +94,7 @@ namespace dom {
 
     std::string Parser::getTagName(std::string& tag)
     {
-        int start;
-        if (tag.length() > 2 && tag.substr(0, 2) == "</")
-            start = 2;
-        else
-            start = 1;
+        int start = tag.substr(0, 2) == "</" ? 2 : 1;
 
         int curr = start;
         while (curr < tag.length() && !std::isspace(tag[curr]) && tag[curr] != '>') curr++;
@@ -110,7 +104,7 @@ namespace dom {
 
     std::map<std::string, std::string>* Parser::getAttributes(std::string& tag)
     {
-        std::map<std::string, std::string>* pairs = new std::map<std::string, std::string>();
+        auto * pairs = new std::map<std::string, std::string>();
         auto truncTag = tag.substr(1, tag.length() - 2);
         auto tokens = util::tokenize(truncTag, 32, true);
 
