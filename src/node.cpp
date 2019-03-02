@@ -49,8 +49,13 @@ namespace dom {
 			auto id = util::mapGet<std::string, std::string>(*attributes, "id");
 			if (!id.empty()) out << COLOR_RED << "#" << id << COLOR_RESET;
 
-			auto className = util::mapGet<std::string, std::string>(*attributes, "class");
-			if (!className.empty()) out << COLOR_BLUE << "." << className << COLOR_RESET;
+			auto classNameStr = util::mapGet<std::string, std::string>(*attributes, "class");
+			if (!classNameStr.empty())
+			{
+				auto classNames = util::tokenize(classNameStr, ' ');
+				for (auto className : classNames)
+					out << COLOR_BLUE << "." << className << COLOR_RESET;
+			}
 		}
 
 		return out.str();
