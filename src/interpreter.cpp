@@ -23,6 +23,7 @@ namespace dom {
             }
             
             std::ofstream fd(cmds.at(1));
+            fd << "<!DOCTYPE html>" << std::endl;
             fd << tree->toHTML();
             fd.close();
             Log("Tree saved to " << cmds.at(1));

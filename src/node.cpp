@@ -64,22 +64,26 @@ namespace dom {
 	std::string Node::toHTML()
 	{
 		std::ostringstream out;
-		toHTML(this, out);
+		toHTML(this, out, "");
 		return out.str();
 	}
 
-	void Node::toHTML(Node* node, std::ostringstream& out)
+	void Node::toHTML(Node* node, std::ostringstream& out, std::string prefix)
 	{
-		out << node->getOpeningTag();
-		if (!node->innerHTML.empty()) out << node->innerHTML;
+		out << prefix << node->getOpeningTag();
 
+		// For childless, empty nodes, don't move to new line to write closing tag
+		if (node->children != nullptr) out << std::endl;
+
+		if (!node->innerHTML.empty()) out << node->innerHTML;
 		if (node->children != nullptr)
 		{
 			for (Node* child : *(node->children))
-				toHTML(child, out);
+				toHTML(child, out, prefix + "\t");
 		}
 
-		out << node->getClosingTag();
+		if (node->children != nullptr) out << prefix;
+		out << node->getClosingTag() << std::endl;
 	}
 
 	std::string Node::getOpeningTag() const

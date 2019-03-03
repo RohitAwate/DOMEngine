@@ -26,7 +26,7 @@ namespace dom {
 		std::vector<Node*> *children;
 		std::map<std::string, std::string> *attributes;
 
-		static void toHTML(Node* node, std::ostringstream& out);
+		static void toHTML(Node* node, std::ostringstream& out, std::string prefix);
 
 		friend class Tree;
 		friend class Parser;
