@@ -26,6 +26,8 @@ namespace dom {
 		std::vector<Node*> *children;
 		std::map<std::string, std::string> *attributes;
 
+		static void toHTML(Node* node, std::ostringstream& out);
+
 		friend class Tree;
 		friend class Parser;
 	public:
@@ -39,7 +41,13 @@ namespace dom {
 
 		void appendChild(Node* child);
 
+		std::string getOpeningTag() const;
+
+		std::string getClosingTag() const;
+
 		std::string toString() const;
+
+		std::string toHTML();
 		
 		bool matches(const Selector& selector);
 

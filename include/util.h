@@ -11,7 +11,7 @@ namespace util {
 
     void logSyntaxError(std::string);
     
-    std::vector<std::string> tokenize(std::string in, char delim, bool stringAware = false);
+    std::vector<std::string> tokenize(std::string in, char delim = ' ', bool stringAware = false);
 
     std::vector<std::string> tokenizeWhitespace(std::string in);
 

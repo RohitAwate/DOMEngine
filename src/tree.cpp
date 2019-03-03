@@ -100,6 +100,13 @@ namespace dom {
 		print(current->children->back(), childPrefix, true);
 	}
 
+	std::string Tree::toHTML()
+	{
+		if (root == nullptr) return "";
+
+		return root->children->at(0)->toHTML();
+	}
+
 	/*
 		Tokenizes the selector and returns a Selector object which
 		contains the type, ID and the classes.

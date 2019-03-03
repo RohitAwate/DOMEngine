@@ -1,6 +1,8 @@
 #include "interpreter.h"
 #include "util.h"
 
+#include <fstream>
+
 namespace dom {
 
     const std::regex Interpreter::SELECTOR_CMD_FORMAT{R"(\$\(".*"\))"};
@@ -9,7 +11,22 @@ namespace dom {
 
     void Interpreter::resolveCmd(std::string& cmd) const
     {
-        if (cmd == "print") tree->print();
+        std::vector<std::string> cmds = util::tokenize(cmd);
+
+        if (cmds.at(0) == "print") tree->print();
+        else if (cmds.at(0) == "save")
+        {
+            if (cmds.size() != 2)
+            {
+                util::logSyntaxError("Usage: save <output-file>");
+                return;
+            }
+            
+            std::ofstream fd(cmds.at(1));
+            fd << tree->toHTML();
+            fd.close();
+            Log("Tree saved to " << cmds.at(1));
+        }
     }
 
     void Interpreter::resolveSubCmd(std::string& subCmd, Node* selected) const

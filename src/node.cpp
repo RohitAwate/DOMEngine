@@ -61,6 +61,53 @@ namespace dom {
 		return out.str();
 	}
 
+	std::string Node::toHTML()
+	{
+		std::ostringstream out;
+		toHTML(this, out);
+		return out.str();
+	}
+
+	void Node::toHTML(Node* node, std::ostringstream& out)
+	{
+		out << node->getOpeningTag();
+		if (!node->innerHTML.empty()) out << node->innerHTML;
+
+		if (node->children != nullptr)
+		{
+			for (Node* child : *(node->children))
+				toHTML(child, out);
+		}
+
+		out << node->getClosingTag();
+	}
+
+	std::string Node::getOpeningTag() const
+	{
+		std::ostringstream out;
+		out << "<" << type;
+		
+		if (attributes != nullptr)
+		{
+			std::function<void(const std::string&, const std::string&)> lambda =
+				[&](const std::string& key, const std::string& val) {
+					out << " " << key << "=\"" << val << "\"";
+				};
+
+			forEachAttribute(lambda);
+		}
+
+		out << ">";
+		return out.str();
+	}
+
+	std::string Node::getClosingTag() const
+	{
+		std::ostringstream out;
+		out << "</" << type << ">";
+		return out.str();
+	}
+
 	// Parses the identifier and compares it with the type, ID and classes of the node.
 	bool Node::matches(const Selector& selector)
 	{

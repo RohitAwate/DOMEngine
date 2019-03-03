@@ -16,6 +16,8 @@ namespace dom {
 
 		void print();
 
+		std::string toHTML();
+
 		bool isBuilt();
 	private:
 		static std::string generateTreePrefix(std::string prefix, bool isTail);

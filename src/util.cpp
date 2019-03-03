@@ -132,7 +132,7 @@ namespace util {
 
     void readLine(std::string& line)
     {
-        std::cin >> line;
+        std::getline(std::cin >> std::ws, line);
     }
 
     void logSyntaxError(std::string msg)
