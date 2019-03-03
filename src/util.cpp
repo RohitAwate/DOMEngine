@@ -33,6 +33,12 @@ namespace util {
         return str.find_first_not_of(' ') == std::string::npos;
     }
 
+    bool endsWith(const std::string& str, const std::string& sub)
+    {
+        int subLen = sub.length();
+        return str.substr(str.length() - subLen, subLen) == sub;
+    }
+
     std::vector<std::string> tokenizeWhitespace(std::string in)
     {
         std::vector<std::string> tokens;
@@ -55,65 +61,70 @@ namespace util {
         return tokens;
     }
 
-    std::vector<std::string> tokenizeTag(std::string in)
+    std::vector<std::string> tokenizeHTML(std::vector<std::string>& src)
     {
         std::vector<std::string> tokens;
 
-        int curr = 0;
-        int len = in.length();
+        int curr, len;
         std::string token;
         bool tagComplete = true;
 
-        while (curr < len)
+        for (std::string line : src)
         {
-            // If <, set tagComplete to false.
-            // Add everything to token until >.
-            if (in[curr] == '<')
-            {
-                tagComplete = false;
-                token.append(1, in[curr]);
-            }
+            len = line.length();
+            curr = 0;
 
-            // If >, set tagComplete to true.
-            // Add token to vector.
-            // Clear token.
-            else if (in[curr] == '>')
+            while (curr < len)
             {
-                token.append(1, in[curr]);
-                tagComplete = true;
-                tokens.push_back(token);
-                token.clear();
-            }
-
-            // Handle whitespace based on whether tagComplete is set or not
-            else if (std::isspace(in[curr]))
-            {
-                if (!tagComplete)
-                    token.append(1, in[curr]);
-            }
-            
-            // Handle other characters on the basis of tagComplete
-            else
-            {
-                // For tagname, attributes, etc
-                if (!tagComplete)
-                    token.append(1, in[curr]);
-
-                // For the tag content
-                else
+                // If <, set tagComplete to false.
+                // Add everything to token until >.
+                if (line[curr] == '<')
                 {
-                    token.clear();
-                    // Add everything to a separate token until < is found.
-                    while (curr < len && in[curr] != '<')
-                        token.append(1, in[curr++]);
+                    tagComplete = false;
+                    token.append(1, line[curr]);
+                }
 
+                // If >, set tagComplete to true.
+                // Add token to vector.
+                // Clear token.
+                else if (line[curr] == '>')
+                {
+                    token.append(1, line[curr]);
+                    tagComplete = true;
                     tokens.push_back(token);
                     token.clear();
-                    continue;
                 }
+
+                // Handle whitespace based on whether tagComplete is set or not
+                else if (std::isspace(line[curr]))
+                {
+                    if (!tagComplete)
+                        token.append(1, line[curr]);
+                }
+                
+                // Handle other characters on the basis of tagComplete
+                else
+                {
+                    // For tagname, attributes, etc
+                    if (!tagComplete)
+                        token.append(1, line[curr]);
+
+                    // For the tag content
+                    else
+                    {
+                        token.clear();
+                        // Add everything to a separate token until < is found.
+                        while (curr < len && line[curr] != '<')
+                            token.append(1, line[curr++]);
+
+                        tokens.push_back(token);
+                        token.clear();
+                        continue;
+                    }
+                }
+                
+                curr++;
             }
-            
-            curr++;
         }
 
         return tokens;

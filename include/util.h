@@ -15,11 +15,13 @@ namespace util {
 
     std::vector<std::string> tokenizeWhitespace(std::string in);
 
-    std::vector<std::string> tokenizeTag(std::string in);
+    std::vector<std::string> tokenizeHTML(std::vector<std::string>& src);
 
     void readLine(std::string& line);
 
     bool isBlank(std::string& str);
+
+    bool endsWith(const std::string& str, const std::string& substr);
 
     template <typename K, typename V>
     V mapGet(std::map<K, V>& m, K key)

@@ -22,39 +22,49 @@ namespace dom {
         std::stack<std::string> stack;
         Node* root = new Node("document");
         Node* node = root;
-        for (std::string line: src)
+        bool commentCompleted = true;
+        auto tokens = util::tokenizeHTML(src);
+
+        for (std::string token : tokens)
         {
-            auto tokens = util::tokenizeTag(line);
-
-            for (std::string token : tokens)
+            // Tag
+            if (token[0] == '<')
             {
-                // Tag
-                if (token[0] == '<')
+                // Closing tag
+                if (token[1] == '/')
                 {
-                    // Closing tag
-                    if (token[1] == '/')
+                    auto tagName = getTagName(token);
+
+                    if (stack.empty() || stack.top() != tagName)
                     {
-                        auto tagName = getTagName(token);
-
-                        if (stack.empty() || stack.top() != tagName)
-                        {
-                            util::logSyntaxError("Stray tag: </" + tagName + ">");
-                            std::exit(1);
-                        }
-                        else
-                        {
-                            // Return to parent and pop from stack
-                            node = node->getParent();
-                            stack.pop();
-                        }
+                        util::logSyntaxError("Stray tag: </" + tagName + ">");
+                        std::exit(1);
                     }
-
-                    // Comment; ignore
-                    else if (token[1] == '!')
-                        continue;
-
-                    // Opening tag
                     else
+                    {
+                        // Return to parent and pop from stack
+                        node = node->getParent();
+                        stack.pop();
+                    }
+                }
+
+                // Comment; ignore
+                else if (token[1] == '!')
+                {
+                    if (token.substr(2, 2) == "--")
+                    {
+                        commentCompleted = false;
+
+                        // If single line comment
+                        if (util::endsWith(token, "-->"))
+                            commentCompleted = true;
+                    }
+                }
+
+                else
+                {
+                    // For opening tag
+                    if (commentCompleted)
                     {
                         auto tagName = getTagName(token);
 
@@ -71,10 +81,13 @@ namespace dom {
                         // Parse attributes
                         node->attributes = getAttributes(token);
                     }
+                    // For multi-line comment
+                    else if (util::endsWith(token, "-->")) commentCompleted = true; 
                 }
-                else    // Appending since the innerHTML may be broken into multiple tokens
-                    node->innerHTML.append(token);
             }
+            // Appending since the innerHTML may be broken into multiple tokens
+            else if (commentCompleted)
+                node->innerHTML.append(token);
         }
 
         if (stack.empty())
