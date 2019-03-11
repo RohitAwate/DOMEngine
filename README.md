@@ -57,6 +57,8 @@ cd ../bin/
     - `innerhtml` Prints the innerHTML
     - `return` Deselects the node and returns to shell
     <br/>
+- `save file.html`\
+    Generates formatted HTML for the DOM tree and saves it to the specified file.
 - `exit`\
     Exits the shell.
 
@@ -85,7 +87,7 @@ print;
 ### Selector Blocks
 The first five lines demonstrate the usage of DOM Engine's selectors and running sub-commands on selected nodes. The selector is the same as you'd use in the shell with the sub-commands grouped together inside the curly braces, separated by semi-colons.
 
-The next two selector blocks show alternative formatting.
+The next three selector blocks show alternative formatting.
 
 Finally, the last line shows the `print` command terminated with a semi-colon.
 
