@@ -31,7 +31,7 @@ These instructions **do not require** any nodes to be selected. Any selections m
 - `SAVE <string:filepath>` - Saves the HTML representation of the tree to the specified file. This instruction uses the value of `flag` to determine whether or not to format the HTML.
 - `PRINT` - Prints the DOM tree
 
-## Dependent Instructions
+### Dependent Instructions
 These instructions **require** one or more nodes to be selected before execution. For instructions requiring a single node, the `selection` register is referred, whereas for those requiring multiple nodes, `mselection` is referred. If `selection` or `mselection` do not contain nodes required by their respective instructions, the VM will throw an error.
 
 - `ATTRS` - Displays the node's attributes
@@ -41,7 +41,7 @@ These instructions **require** one or more nodes to be selected before execution
 
 **IMPORTANT**: All of the above instructions have corresponding _multiplied_ versions which perform the same operations but for all nodes in `mselection`. These instructions have the prefix `M`. For example, the multiplied version of `CHILDREN` is `MCHILDREN`.
 
-## Meta Instructions
+### Meta Instructions
 These instructions are intrinsic to the VM itself and are used to manipulate register values. The naming convention is as follows: register mnemonic + action.
 - `SELCLR` - Sets `selection` to `nullptr`
 - `MSELCLR` - Removes all nodes from `mselection`
