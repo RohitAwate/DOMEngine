@@ -3,7 +3,7 @@
 
 #include "node.h"
 #include "tree.h"
-#include "interpreter.h"
+#include "vm.h"
 
 namespace dom {
 
@@ -11,7 +11,7 @@ namespace dom {
 	{
 	private:
 		Tree* tree;
-		Interpreter* interpreter;
+		VirtualMachine* vm;
 	public:
 		Shell(Tree* tree);
 

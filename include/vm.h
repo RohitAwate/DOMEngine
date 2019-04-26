@@ -1,5 +1,5 @@
-#ifndef INTERPRETER_H
-#define INTERPRETER_H
+#ifndef VM_H
+#define VM_H
 
 #include <fstream>
 #include <regex>
@@ -9,23 +9,22 @@
 
 namespace dom
 {
-    
-    class Interpreter
+    class VirtualMachine
     {
     private:
         Tree* tree;
         const static std::regex SELECTOR_CMD_FORMAT;
     public:
-        Interpreter(Tree* tree);
+        explicit VirtualMachine(Tree* tree);
     
         Node* select(std::string& selectStr) const;
         
-        void resolveCmd(std::string& cmd) const;
+        void executeCmd(std::string &cmd) const;
 
-        void resolveSubCmd(std::string& subCmd, Node* selected) const;
+        void executeSubCmd(std::string &subCmd, Node *selected) const;
     };
 
 } // namespace dom
 
 
-#endif // INTERPRETER_H
+#endif // VM_H

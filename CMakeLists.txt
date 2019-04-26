@@ -18,7 +18,7 @@ set(SRC
 	src/tree.cpp
 	src/parser.cpp
 	src/util.cpp
-	src/interpreter.cpp
+	src/vm.cpp
 	src/script.cpp
 	src/shell.cpp
 )

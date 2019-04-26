@@ -7,7 +7,7 @@
 namespace dom
 {
 
-    ScriptRunner::ScriptRunner(Tree* tree, char* scriptSrc) : tree(tree), interpreter(tree)
+    ScriptRunner::ScriptRunner(Tree* tree, char* scriptSrc) : tree(tree), vm(tree)
     {
         std::ifstream fd(scriptSrc);
 
@@ -221,21 +221,21 @@ namespace dom
             Log("> " << scriptCmd->cmd);
             if (scriptCmd->subCmds)
             {
-                auto selected = interpreter.select(scriptCmd->cmd);
+                auto selected = vm.select(scriptCmd->cmd);
                 if (selected)
                 {
                     Log(TEXT_BOLD << "$ " << selected->toString() << TEXT_RESET);
                     for (auto subCmd : *scriptCmd->subCmds)
                     {
                         Log(".. > " << subCmd << TEXT_RESET);
-                        interpreter.resolveSubCmd(subCmd, selected);
+                        vm.executeSubCmd(subCmd, selected);
                     }
                 }
                 else Log("No match found.");
             }
             else
             {
-                interpreter.resolveCmd(scriptCmd->cmd);
+                vm.executeCmd(scriptCmd->cmd);
             }
 
             Log("────────────────────────");

@@ -5,7 +5,7 @@
 #include <vector>
 
 #include "tree.h"
-#include "interpreter.h"
+#include "vm.h"
 
 namespace dom
 {
@@ -14,7 +14,7 @@ namespace dom
     {
     private:
         Tree* tree;
-        Interpreter interpreter;
+        VirtualMachine vm;
         std::vector<std::string> src;
 
         struct ScriptCommand

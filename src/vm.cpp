@@ -1,15 +1,15 @@
-#include "interpreter.h"
+#include "vm.h"
 #include "util.h"
 
 #include <fstream>
 
 namespace dom {
 
-    const std::regex Interpreter::SELECTOR_CMD_FORMAT{R"(\$\(".*"\))"};
+    const std::regex VirtualMachine::SELECTOR_CMD_FORMAT{R"(\$\(".*"\))"};
 
-    Interpreter::Interpreter(Tree* tree) : tree(tree) {}
+    VirtualMachine::VirtualMachine(Tree* tree) : tree(tree) {}
 
-    void Interpreter::resolveCmd(std::string& cmd) const
+    void VirtualMachine::executeCmd(std::string &cmd) const
     {
         std::vector<std::string> cmds = util::tokenize(cmd);
 
@@ -30,7 +30,7 @@ namespace dom {
         }
     }
 
-    void Interpreter::resolveSubCmd(std::string& subCmd, Node* selected) const
+    void VirtualMachine::executeSubCmd(std::string &subCmd, Node *selected) const
     {
         if (subCmd == "parent")
         {
@@ -70,7 +70,7 @@ namespace dom {
         else Log("Unknown sub-command: " << subCmd);
     }
 
-    Node* Interpreter::select(std::string& cmd) const
+    Node* VirtualMachine::select(std::string& cmd) const
     {
         // Check if first function call matches the selector command format
         if (regex_match(cmd.substr(0, cmd.find_first_of(')') + 1), SELECTOR_CMD_FORMAT))

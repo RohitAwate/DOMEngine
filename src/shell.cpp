@@ -10,7 +10,7 @@ namespace dom {
 
     Shell::Shell(Tree* tree) : tree(tree)
     {
-        this->interpreter = new Interpreter(tree);
+        this->vm = new VirtualMachine(tree);
     }
 
     void Shell::start()
@@ -35,11 +35,11 @@ namespace dom {
                 
             if (cmd[0] == '$')
             {
-                Node* matchedNode = interpreter->select(cmd);
+                Node* matchedNode = vm->select(cmd);
                 if (matchedNode) startSubCmdLoop(matchedNode);
                 else Log("No match found.");
             }
-            else interpreter->resolveCmd(cmd);
+            else vm->executeCmd(cmd);
         }
     }
 
@@ -57,7 +57,7 @@ namespace dom {
             if (subCmd == "return") return;
             if (subCmd == "exit") std::exit(0);
 
-            interpreter->resolveSubCmd(subCmd, selected);
+            vm->executeSubCmd(subCmd, selected);
         }
     }
 
