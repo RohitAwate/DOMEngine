@@ -1,33 +1,43 @@
-#include "vm.h"
-#include "util.h"
 
-#include <fstream>
+#include <vm.h>
 
 namespace dom {
 
-    const std::regex VirtualMachine::SELECTOR_CMD_FORMAT{R"(\$\(".*"\))"};
+    VirtualMachine::VirtualMachine(Tree* tree) : tree(tree)
+    {
+        loadRoutines();
+    }
 
-    VirtualMachine::VirtualMachine(Tree* tree) : tree(tree) {}
-
-    void VirtualMachine::executeCmd(std::string &cmd) const
+    void VirtualMachine::loadRoutines()
     {
         std::vector<std::string> cmds = util::tokenize(cmd);
 
-        if (cmds.at(0) == "print") tree->print();
-        else if (cmds.at(0) == "save")
+    int VirtualMachine::execute(const Statement &statement)
+    {
+        if (tree == nullptr)
         {
-            if (cmds.size() != 2)
-            {
-                util::logSyntaxError("Usage: save <output-file>");
-                return;
-            }
-            
-            std::ofstream fd(cmds.at(1));
-            fd << "<!DOCTYPE html>" << std::endl;
-            fd << tree->toHTML();
-            fd.close();
-            Log("Tree saved to " << cmds.at(1));
+            Log("VMError: Tree not initialized.");
+            return -1;
         }
+
+        Routine routine = routines[statement.instr];
+        (this->*routine)(statement.arg);
+
+        return 0;
+    }
+
+    int VirtualMachine::execute(const std::vector<Statement> &statements)
+    {
+        if (tree == nullptr)
+        {
+            Log("VMError: Tree not initialized.");
+            return -1;
+        }
+
+        for (const Statement& statement : statements)
+            execute(statement);
+
+        return 0;
     }
 
     void VirtualMachine::executeSubCmd(std::string &subCmd, Node *selected) const
@@ -53,7 +63,7 @@ namespace dom {
         }
         else if (subCmd == "attrs")
         {
-            std::function<void(const std::string&, const std::string&)> lambda = 
+            std::function<void(const std::string&, const std::string&)> lambda =
                 [](const std::string& key, const std::string& value) {
                     std::cout << key << ": " << value << std::endl;
                 };
@@ -70,19 +80,29 @@ namespace dom {
         else Log("Unknown sub-command: " << subCmd);
     }
 
-    Node* VirtualMachine::select(std::string& cmd) const
+    // VM Routines
+    // Independent
+    int VirtualMachine::routineSEL(void* rawArg)
     {
-        // Check if first function call matches the selector command format
-        if (regex_match(cmd.substr(0, cmd.find_first_of(')') + 1), SELECTOR_CMD_FORMAT))
-        {
-            std::string selector = cmd.substr(3, cmd.find_first_of(')') - 4);
-            return tree->match(selector);
-        }
-        else
-        {
-            Log("Invalid syntax: " << cmd);
-            return nullptr;
-        }   
+        std::string* arg = (std::string*) rawArg;
+        selection = tree->match(*arg);
+        return 0;
+    }
+
+    int VirtualMachine::routinePRINT(void*)
+    {
+        tree->print();
+        return 0;
+    }
+
+    int VirtualMachine::routineSAVE(void* rawArg)
+    {
+        std::string* arg = (std::string*) rawArg;
+        std::ofstream fd(*arg);
+        fd << "<!DOCTYPE html>" << std::endl;
+        fd << tree->toHTML();
+        fd.close();
+        Log("Tree saved to " << *arg);
     }
 
 } // namespace dom

@@ -2,13 +2,19 @@
 #define VM_H
 
 #include <fstream>
-#include <regex>
+#include <map>
 
 #include "node.h"
 #include "tree.h"
 
-namespace dom
-{
+namespace dom  {
+
+    struct Statement
+    {
+        std::string instr;
+        void* arg;
+    };
+
     class VirtualMachine
     {
     private:
@@ -16,15 +22,18 @@ namespace dom
         const static std::regex SELECTOR_CMD_FORMAT;
     public:
         explicit VirtualMachine(Tree* tree);
-    
-        Node* select(std::string& selectStr) const;
-        
-        void executeCmd(std::string &cmd) const;
 
-        void executeSubCmd(std::string &subCmd, Node *selected) const;
+        int execute(const Statement& statement);
+
+        int execute(const std::vector<Statement>& statements);
+    private:
+        // VM Routines
+        // Independent
+        int routineSEL(void*);
+        int routinePRINT(void*);
+        int routineSAVE(void*);
     };
 
 } // namespace dom
 
-
-#endif // VM_H
+#endif
