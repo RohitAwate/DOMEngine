@@ -5,3 +5,4 @@
 #include "shell.h"
 #include "parser.h"
 #include "script.h"
+#include "vm.h"

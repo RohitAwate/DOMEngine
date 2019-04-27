@@ -32,6 +32,21 @@ namespace dom  {
         int routineSEL(void*);
         int routinePRINT(void*);
         int routineSAVE(void*);
+
+        // Dependent
+        int routineATTRS(void*);
+        int routineCHILDREN(void*);
+        int routineINNERHTML(void*);
+        int routinePARENT(void*);
+
+        // Meta
+        inline int routineSELCLR(void*);
+        inline int routineMSELCLR(void*);
+        inline int routineASELCLR(void*);
+        inline int routineFLAGSET(void*);
+        inline int routineFLAGCLR(void*);
+        inline int routineBUFSET(void*);
+        inline int routineBUFCLR(void*);
     };
 
 } // namespace dom
