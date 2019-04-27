@@ -28,6 +28,8 @@ namespace dom {
         routines.insert(std::make_pair("INNERHTML", &VirtualMachine::routineINNERHTML));
         routines.insert(std::make_pair("PARENT", &VirtualMachine::routinePARENT));
 
+        routines.insert(std::make_pair("IFSEL", &VirtualMachine::routineIFSEL));
+        routines.insert(std::make_pair("IFNSEL", &VirtualMachine::routineIFNSEL));
         routines.insert(std::make_pair("SELCLR", &VirtualMachine::routineSELCLR));
         routines.insert(std::make_pair("MSELCLR", &VirtualMachine::routineMSELCLR));
         routines.insert(std::make_pair("ASELCLR", &VirtualMachine::routineASELCLR));
@@ -158,6 +160,29 @@ namespace dom {
         Log(selection->getParent()->toString());
     }
 
+    // Meta
+    int VirtualMachine::routineIFSEL(void* rawArg)
+    {
+        if (selection != nullptr)
+        {
+            std::vector<Statement>* subroutine = (std::vector<Statement>*) rawArg;
+            return execute(*subroutine);
+        }
+
+        return 1;
+    }
+
+    int VirtualMachine::routineIFNSEL(void* rawArg)
+    {
+        if (selection == nullptr)
+        {
+            std::vector<Statement>* subroutine = (std::vector<Statement>*) rawArg;
+            return execute(*subroutine);
+        }
+
+        return 1;
+    }
+    
     int VirtualMachine::routineSELCLR(void*)
     {
         selection = nullptr;

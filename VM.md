@@ -20,7 +20,7 @@ The VM offers certain data structures which can be used by the instructions. The
 - `tree` - The DOM tree itself
 - `selection` - A single DOM node
 - `mselection` - A vector of DOM nodes
-- `buffer` - A DOM node which can be used by instructions 
+- `buffer` - A typeless pointer 
 - `flag` - A boolean value which defaults to false
 
 ## Bytecode
@@ -42,7 +42,9 @@ These instructions **require** one or more nodes to be selected before execution
 **IMPORTANT**: All of the above instructions have corresponding _multiplied_ versions which perform the same operations but for all nodes in `mselection`. These instructions have the prefix `M`. For example, the multiplied version of `CHILDREN` is `MCHILDREN`.
 
 ### Meta Instructions
-These instructions are intrinsic to the VM itself and are used to manipulate register values. The naming convention is as follows: register mnemonic + action.
+These instructions are intrinsic to the VM itself and are used to control flow and manipulate register values. The naming convention is as follows: register mnemonic + action.
+- `IFSEL <Subroutine:subr>` Executes `subr` if selection is not `nullptr`. Subroutines are vectors of Statements.
+- `IFNSEL <Subroutine:subr>` Executes `subr` if selection is `nullptr`
 - `SELCLR` - Sets `selection` to `nullptr`
 - `MSELCLR` - Removes all nodes from `mselection`
 - `ASELCLR` - Performs both `SELCLR` and `MSELCLR`

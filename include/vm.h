@@ -25,8 +25,8 @@ namespace dom  {
         bool flag;
 
         typedef int (VirtualMachine::*Routine)(void*);
-        static std::map<std::string, Routine> routines;
-        static void loadRoutines();
+        std::map<std::string, Routine> routines;
+        void loadRoutines();
     public:
         explicit VirtualMachine(Tree* tree);
 
@@ -47,6 +47,8 @@ namespace dom  {
         int routinePARENT(void*);
 
         // Meta
+        inline int routineIFSEL(void*);
+        inline int routineIFNSEL(void*);
         inline int routineSELCLR(void*);
         inline int routineMSELCLR(void*);
         inline int routineASELCLR(void*);
