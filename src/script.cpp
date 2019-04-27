@@ -2,10 +2,7 @@
 #include "util.h"
 #include "style.h"
 
-#include <fstream>
-
-namespace dom
-{
+namespace dom {
 
     ScriptRunner::ScriptRunner(Tree* tree, char* scriptSrc) : tree(tree), vm(tree)
     {

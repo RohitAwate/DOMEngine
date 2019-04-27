@@ -6,17 +6,17 @@ int main(int argc, char *argv[])
 	if (argc == 2)
 	{
 		dom::Parser parser(argv[1]);
-		dom::Tree *dtree = parser.parse();
+		dom::Tree* tree = parser.parse();
 
-		dom::Shell *shell = new dom::Shell(dtree);
-		shell->start();
+		dom::Shell shell(tree);
+		shell.start();
 	}
 	else if (argc == 3)
 	{
 		dom::Parser parser(argv[1]);
-		dom::Tree *dtree = parser.parse();
+		dom::Tree* tree = parser.parse();
 
-		dom::ScriptRunner runner(dtree, argv[2]);
+		dom::ScriptRunner runner(tree, argv[2]);
 		runner.run();
 	}
 	else

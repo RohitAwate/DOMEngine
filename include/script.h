@@ -7,8 +7,7 @@
 #include "tree.h"
 #include "vm.h"
 
-namespace dom
-{
+namespace dom {
     
     class ScriptRunner
     {

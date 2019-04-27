@@ -19,7 +19,14 @@ namespace dom  {
     {
     private:
         Tree* tree;
-        const static std::regex SELECTOR_CMD_FORMAT;
+        Node* selection;
+        std::vector<Node*> mselection;
+        void* buffer;
+        bool flag;
+
+        typedef int (VirtualMachine::*Routine)(void*);
+        static std::map<std::string, Routine> routines;
+        static void loadRoutines();
     public:
         explicit VirtualMachine(Tree* tree);
 
