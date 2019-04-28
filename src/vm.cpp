@@ -1,3 +1,5 @@
+#include <fstream>
+
 #include "vm.h"
 #include "util.h"
 #include "style.h"
@@ -19,27 +21,27 @@ namespace dom {
 
     void VirtualMachine::loadRoutines()
     {
-        routines.insert(std::make_pair(       "SEL", &VirtualMachine::routineSEL       ));
-        routines.insert(std::make_pair(     "PRINT", &VirtualMachine::routinePRINT     ));
-        routines.insert(std::make_pair(      "SAVE", &VirtualMachine::routineSAVE      ));
+        routines[SEL] = &VirtualMachine::routineSEL;
+        routines[PRINT] = &VirtualMachine::routinePRINT;
+        routines[SAVE] = &VirtualMachine::routineSAVE;
 
-        routines.insert(std::make_pair(     "ATTRS", &VirtualMachine::routineATTRS     ));
-        routines.insert(std::make_pair(  "CHILDREN", &VirtualMachine::routineCHILDREN  ));
-        routines.insert(std::make_pair( "INNERHTML", &VirtualMachine::routineINNERHTML ));
-        routines.insert(std::make_pair(    "PARENT", &VirtualMachine::routinePARENT    ));
+        routines[ATTRS] = &VirtualMachine::routineATTRS;
+        routines[CHILDREN] = &VirtualMachine::routineCHILDREN;
+        routines[INNERHTML] = &VirtualMachine::routineINNERHTML;
+        routines[PARENT] = &VirtualMachine::routinePARENT;
 
-        routines.insert(std::make_pair(     "IFSEL", &VirtualMachine::routineIFSEL     ));
-        routines.insert(std::make_pair(    "IFNSEL", &VirtualMachine::routineIFNSEL    ));
-        routines.insert(std::make_pair(    "SELCLR", &VirtualMachine::routineSELCLR    ));
-        routines.insert(std::make_pair(   "MSELCLR", &VirtualMachine::routineMSELCLR   ));
-        routines.insert(std::make_pair(   "ASELCLR", &VirtualMachine::routineASELCLR   ));
-        routines.insert(std::make_pair(   "FLAGSET", &VirtualMachine::routineFLAGSET   ));
-        routines.insert(std::make_pair(   "FLAGCLR", &VirtualMachine::routineFLAGCLR   ));
-        routines.insert(std::make_pair(    "BUFSET", &VirtualMachine::routineBUFSET    ));
-        routines.insert(std::make_pair(    "BUFLCR", &VirtualMachine::routineBUFCLR    ));
+        routines[IFSEL] = &VirtualMachine::routineIFSEL;
+        routines[IFNSEL] = &VirtualMachine::routineIFNSEL;
+        routines[SELCLR] = &VirtualMachine::routineSELCLR;
+        routines[MSELCLR] = &VirtualMachine::routineMSELCLR;
+        routines[ASELCLR] = &VirtualMachine::routineASELCLR;
+        routines[FLAGSET] = &VirtualMachine::routineFLAGSET;
+        routines[FLAGCLR] = &VirtualMachine::routineFLAGCLR;
+        routines[BUFSET] = &VirtualMachine::routineBUFSET;
+        routines[BUFCLR] = &VirtualMachine::routineBUFCLR;
     }   
 
-    int VirtualMachine::execute(const Statement &statement)
+    int VirtualMachine::execute(const BytecodeInstruction& instruction)
     {
         if (tree == nullptr)
         {
@@ -47,13 +49,13 @@ namespace dom {
             return -1;
         }
 
-        Routine routine = routines[statement.instr];
-        (this->*routine)(statement.arg);
+        Routine routine = routines[instruction.opcode];
+        (this->*routine)(instruction.arg);
 
         return 0;
     }
 
-    int VirtualMachine::execute(const std::vector<Statement> &statements)
+    int VirtualMachine::execute(const std::vector<BytecodeInstruction>& subroutine)
     {
         if (tree == nullptr)
         {
@@ -61,8 +63,8 @@ namespace dom {
             return -1;
         }
 
-        for (const Statement& statement : statements)
-            execute(statement);
+        for (const BytecodeInstruction& instruction : subroutine)
+            execute(instruction);
 
         return 0;
     }
@@ -165,7 +167,7 @@ namespace dom {
     {
         if (selection != nullptr)
         {
-            std::vector<Statement>* subroutine = (std::vector<Statement>*) rawArg;
+            std::vector<BytecodeInstruction>* subroutine = (std::vector<BytecodeInstruction>*) rawArg;
             return execute(*subroutine);
         }
 
@@ -176,7 +178,7 @@ namespace dom {
     {
         if (selection == nullptr)
         {
-            std::vector<Statement>* subroutine = (std::vector<Statement>*) rawArg;
+            std::vector<BytecodeInstruction>* subroutine = (std::vector<BytecodeInstruction>*) rawArg;
             return execute(*subroutine);
         }
 

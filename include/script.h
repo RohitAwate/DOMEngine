@@ -44,8 +44,10 @@ namespace dom {
 
         int validate();
 
-        std::vector<dom::Statement> statements;
+        std::vector<dom::BytecodeInstruction> instructions;
         int parse();
+
+        static std::vector<BytecodeInstruction> resolveFuncCall(ScriptToken& token, bool multiplied);
     public:
         ScriptRunner(Tree* tree, char* scriptSrc);
 

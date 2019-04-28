@@ -21,6 +21,8 @@ namespace util {
 
     bool isBlank(std::string& str);
 
+    bool startsWith(const std::string& str, const std::string& substr);
+
     bool endsWith(const std::string& str, const std::string& substr);
 
     template <typename K, typename V>

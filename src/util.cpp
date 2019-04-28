@@ -33,6 +33,12 @@ namespace util {
         return str.find_first_not_of(' ') == std::string::npos;
     }
 
+    bool startsWith(const std::string& str, const std::string& sub)
+    {
+        int subLen = sub.length();
+        return str.substr(0, subLen) == sub;
+    }
+
     bool endsWith(const std::string& str, const std::string& sub)
     {
         int subLen = sub.length();
