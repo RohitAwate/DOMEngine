@@ -4,241 +4,144 @@
 
 namespace dom {
 
+    /*
+        Returns a new string similar to the source string without any spaces, tabs and newlines.
+        This function does not alter whitespaces present inside string literals.
+    */
+    std::string removeWhitespace(std::string& source)
+    {
+        bool insideStr = false;
+
+        std::string cleaned;
+        for (unsigned int i = 0; i < source.length(); i++) {
+            if (source[i] == '\"') {
+                insideStr = !insideStr;
+                cleaned += source[i];
+                continue;
+            }
+
+            if ((source[i] != ' ' && source[i] != '\n' && source[i] != '\t') || insideStr) {
+                cleaned += source[i];
+            }
+        }
+
+        return cleaned;
+    }
+
+    std::string ScriptRunner::getSelectorString(ScriptToken& token)
+    {
+        std::string selector;
+        int len = token.token.length();
+        switch (token.type)
+        {
+            case SELECTOR:
+                selector = token.token.substr(3, len - 5);
+                break;
+            case MULTI_SELECTOR:
+                selector = token.token.substr(4, len - 6);
+                break;
+        }
+
+        return selector;
+    }
+
     ScriptRunner::ScriptRunner(Tree* tree, char* scriptSrc) : tree(tree), vm(tree)
     {
         std::ifstream fd(scriptSrc);
 
         std::string line;
         while (std::getline(fd, line))
-        {
-            cleanSource(line);
-            this->src.push_back(line);
-        }
+            this->src += line;
 
         fd.close();
     }
 
     /*
-        Generates a stream of tokens by eliminating whitespaces which
-        are then parsed into a vector of ScriptCommand objects.
+        Scans the source string and uses a set of RegexGroups to generate a
+        stream of ScriptTokens which can be used by the parser.
     */
-    int ScriptRunner::parse()
+    int ScriptRunner::tokenize()
     {
-        if (src.empty()) return -1;
+        if (tokens.size() > 0) return 1;     // for idempotent behaviour
 
-        commands = new std::vector<ScriptCommand*>();
-        std::string pendingSelector;
-        std::string pendingCmd;
-        std::vector<std::string>* subCmds;
-        bool bracesPaired = true;
-        bool semicolonFound = true;
+        regexGroups[0] = RegexGroup{std::regex("\\$\\(\"[a-zA-Z0-9_@#\\.\\-]*\"\\)"), SELECTOR };
+        regexGroups[1] = RegexGroup{std::regex("\\$!\\(\"[a-zA-Z0-9_@#\\.\\-]*\"\\)"), MULTI_SELECTOR };
+        regexGroups[2] = RegexGroup{std::regex("\\{"), OPENING_BRACE };
+        regexGroups[3] = RegexGroup{std::regex("\\}"), CLOSING_BRACE };
+        regexGroups[4] = RegexGroup{std::regex(";"), SEMICOLON };
+        regexGroups[5] = RegexGroup{std::regex("[a-zA-Z]+\\([a-zA-Z\",\\s\\.]*\\)"), FUNCTION_CALL };
 
-        for (std::string line : src)
+        auto tokenSrc = removeWhitespace(src);
+        std::smatch match;
+
+        bool deadIteration = false;
+        while (tokenSrc.length() > 0)
         {
-            auto tokens = util::tokenizeWhitespace(line);
-            
-            for (std::string token: tokens)
+            deadIteration = true;
+
+            for (const RegexGroup& group : regexGroups)
             {
-                // Selector
-                if (token[0] == '$')
+                if (std::regex_search(tokenSrc, match, group.rgx ,std::regex_constants::match_continuous))
                 {
-                    if (!pendingSelector.empty())
-                    {
-                        util::logSyntaxError("Nested selectors not allowed");
-                        return -1;
-                    }
-
-                    if (!pendingCmd.empty() && !semicolonFound)
-                    {
-                        util::logSyntaxError("Semi-colon missing for command: " + pendingCmd);
-                        return -1;
-                    }
-
-                    pendingSelector = token;
-                    subCmds = new std::vector<std::string>();
+                    tokens.push_back(ScriptToken{match.str(0), group.type});
+                    tokenSrc = match.suffix().str();
+                    deadIteration = false;
+                    break;
                 }
+            }
 
-                // Opening brace
-                else if (token[0] == '{')
-                {
-                    if (!bracesPaired || pendingSelector.empty())
-                    {
-                        util::logSyntaxError("Stray '{'");
-                        return -1;
-                    }
-
-                    bracesPaired = false;
-                }
-
-                // Closing brace
-                else if (token[0] == '}')
-                {
-                    if (bracesPaired || pendingSelector.empty())
-                    {
-                        util::logSyntaxError("Stray '}'");
-                        return -1;
-                    }
-
-                    commands->push_back(new ScriptCommand{pendingSelector, subCmds});
-                    pendingSelector.clear();
-                    bracesPaired = true;
-                }
-
-                // Semi-colon
-                else if (token[0] == ';')
-                {
-                    if (semicolonFound)
-                    {
-                        util::logSyntaxError("Stray ';'");
-                        return -1;
-                    }
-                    else
-                    {
-                        semicolonFound = true;
-                        if (pendingSelector.empty())
-                            commands->push_back(new ScriptCommand{pendingCmd, nullptr});
-                        else
-                            subCmds->push_back(pendingCmd);
-                    }
-                }
-
-                // Command
-                else
-                {
-                    if (!semicolonFound && !pendingCmd.empty())
-                    {
-                        util::logSyntaxError("Semi-colon missing for command: " + pendingCmd);
-                        return -1;
-                    }
-
-                    // Check if command ends in semicolon
-                    if (token[token.length() - 1] != ';')
-                    {
-                        semicolonFound = false;
-                        pendingCmd = token;
-                        continue;
-                    }
-
-                    // Remove semi-colon
-                    auto tokenTrunc = token.substr(0, token.length() - 1);
-                    if (pendingSelector.empty())
-                        commands->push_back(new ScriptCommand{tokenTrunc, nullptr});
-                    else
-                        subCmds->push_back(tokenTrunc);
-                }
+            if (deadIteration)
+            {
+                util::logSyntaxError("Cannot parse further:\n" + tokenSrc + "\n");
+                return -1;
             }
         }
 
-        if (!semicolonFound)
-        {
-            util::logSyntaxError("Semi-colon missing for command: " + pendingCmd);
-            return -1;
-        }
-
-        if (!bracesPaired)
-        {
-            util::logSyntaxError("Braces not paired for selector: " + pendingSelector);
-            return -1;
-        }
-
-        if (!pendingSelector.empty())
-        {
-            util::logSyntaxError("Selector block body not found for selector: " + pendingSelector);
-            return -1;
-        }
-        
-        return 1;
+        return 0;
     }
 
-    /*
-        Inserts spaces at appropriate locations in the string
-        to make it easier for tokenization.
-
-        Spaces are inserted:
-        - before $
-        - after ; and )
-        - before and after { and }
-    */
-    void ScriptRunner::cleanSource(std::string& line)
+    // Validates the grammar for the stream of ScriptTokens generated by the tokenizer.
+    int ScriptRunner::validate()
     {
-        int curr, len;
-        char space = 32;
+        if (tokens.size() == 0) return -1;      // if parser is not called beforehand
 
-        curr = 0;
-        len = line.length();
-        while (curr < len)
+        std::string seq = "";
+        bool expectOpening = false;
+        for (ScriptToken& token : tokens)
+            seq += std::to_string(token.type);
+
+        std::regex selBlock("[01]2(54)*3");
+        std::regex funcCall("54");
+        std::smatch match;
+
+        while (seq.length() > 0)
         {
-            // Before
-            if (line[curr] == '$' && curr-1 >= 0)
-            {
-                line.insert(curr, 1, space);
-                len++;
-                curr += 2;
-                continue;
-            }
-
-            // After
-            else if (line[curr] == ';' || line[curr] == ')')
-            {
-                line.insert(curr+1, 1, space);
-                len++;
-                curr += 2;
-                continue;
-            }
-            
-            // Both
-            else if (line[curr] == '{' || line[curr] == '}')
-            {
-                if (curr-1 >= 0) 
-                {
-                    line.insert(curr, 1, space);
-                    line.insert(curr+2, 1, space);
-                    len += 2;
-                    curr += 2;
-                }
-                else
-                {
-                    line.insert(curr+1, 1, space);
-                    len++;
-                    curr += 2;
-                }
-                continue;
-            }
-            curr++;
-        }
-    }
-
-    int ScriptRunner::run()
-    {
-        auto res = parse();
-        if (res != 1) return res;
-
-        for (auto scriptCmd : *commands)
-        {
-            Log("> " << scriptCmd->cmd);
-            if (scriptCmd->subCmds)
-            {
-                auto selected = vm.select(scriptCmd->cmd);
-                if (selected)
-                {
-                    Log(TEXT_BOLD << "$ " << selected->toString() << TEXT_RESET);
-                    for (auto subCmd : *scriptCmd->subCmds)
-                    {
-                        Log(".. > " << subCmd << TEXT_RESET);
-                        vm.executeSubCmd(subCmd, selected);
-                    }
-                }
-                else Log("No match found.");
-            }
+            if (std::regex_search(seq, match, selBlock, std::regex_constants::match_continuous))
+                seq = match.suffix().str();
+            else if (std::regex_search(seq, match, funcCall, std::regex_constants::match_continuous))
+                seq = match.suffix().str();
             else
             {
-                vm.executeCmd(scriptCmd->cmd);
+                util::logSyntaxError("Invalid syntax.");
+                // TODO: Error reporting
+                return -1;
             }
-
-            Log("────────────────────────");
         }
 
-        return 1;
+        return 0;
+    }
+
+    int ScriptRunner::parse()
+    {
+        
+    }
+
+    // Executes the VM Statements generated by the parser in the VirtualMachine.
+    int ScriptRunner::run()
+    {
+        tokenize();
+        validate();
+        parse();
     }
 
 } // namespace dom

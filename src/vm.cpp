@@ -19,25 +19,25 @@ namespace dom {
 
     void VirtualMachine::loadRoutines()
     {
-        routines.insert(std::make_pair("SEL", &VirtualMachine::routineSEL));
-        routines.insert(std::make_pair("PRINT", &VirtualMachine::routinePRINT));
-        routines.insert(std::make_pair("SAVE", &VirtualMachine::routineSAVE));
+        routines.insert(std::make_pair(       "SEL", &VirtualMachine::routineSEL       ));
+        routines.insert(std::make_pair(     "PRINT", &VirtualMachine::routinePRINT     ));
+        routines.insert(std::make_pair(      "SAVE", &VirtualMachine::routineSAVE      ));
 
-        routines.insert(std::make_pair("ATTRS", &VirtualMachine::routineATTRS));
-        routines.insert(std::make_pair("CHILDREN", &VirtualMachine::routineCHILDREN));
-        routines.insert(std::make_pair("INNERHTML", &VirtualMachine::routineINNERHTML));
-        routines.insert(std::make_pair("PARENT", &VirtualMachine::routinePARENT));
+        routines.insert(std::make_pair(     "ATTRS", &VirtualMachine::routineATTRS     ));
+        routines.insert(std::make_pair(  "CHILDREN", &VirtualMachine::routineCHILDREN  ));
+        routines.insert(std::make_pair( "INNERHTML", &VirtualMachine::routineINNERHTML ));
+        routines.insert(std::make_pair(    "PARENT", &VirtualMachine::routinePARENT    ));
 
-        routines.insert(std::make_pair("IFSEL", &VirtualMachine::routineIFSEL));
-        routines.insert(std::make_pair("IFNSEL", &VirtualMachine::routineIFNSEL));
-        routines.insert(std::make_pair("SELCLR", &VirtualMachine::routineSELCLR));
-        routines.insert(std::make_pair("MSELCLR", &VirtualMachine::routineMSELCLR));
-        routines.insert(std::make_pair("ASELCLR", &VirtualMachine::routineASELCLR));
-        routines.insert(std::make_pair("FLAGSET", &VirtualMachine::routineFLAGSET));
-        routines.insert(std::make_pair("FLAGCLR", &VirtualMachine::routineFLAGCLR));
-        routines.insert(std::make_pair("BUFSET", &VirtualMachine::routineBUFSET));
-        routines.insert(std::make_pair("BUFLCR", &VirtualMachine::routineBUFCLR));
-    }
+        routines.insert(std::make_pair(     "IFSEL", &VirtualMachine::routineIFSEL     ));
+        routines.insert(std::make_pair(    "IFNSEL", &VirtualMachine::routineIFNSEL    ));
+        routines.insert(std::make_pair(    "SELCLR", &VirtualMachine::routineSELCLR    ));
+        routines.insert(std::make_pair(   "MSELCLR", &VirtualMachine::routineMSELCLR   ));
+        routines.insert(std::make_pair(   "ASELCLR", &VirtualMachine::routineASELCLR   ));
+        routines.insert(std::make_pair(   "FLAGSET", &VirtualMachine::routineFLAGSET   ));
+        routines.insert(std::make_pair(   "FLAGCLR", &VirtualMachine::routineFLAGCLR   ));
+        routines.insert(std::make_pair(    "BUFSET", &VirtualMachine::routineBUFSET    ));
+        routines.insert(std::make_pair(    "BUFLCR", &VirtualMachine::routineBUFCLR    ));
+    }   
 
     int VirtualMachine::execute(const Statement &statement)
     {

@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 3.10.2)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_BUILD_TYPE Debug)
 
-add_definitions(-DAPP_VERSION="1.1")
+add_definitions(-DAPP_VERSION="1.2")
 
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/../bin)
 
@@ -20,7 +20,7 @@ set(SRC
 	src/util.cpp
 	src/vm.cpp
 	src/script.cpp
-	src/shell.cpp
+	src/repl.cpp
 )
 
 add_executable(dom-engine ${SRC})

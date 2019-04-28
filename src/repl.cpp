@@ -1,4 +1,4 @@
-#include "shell.h"
+#include "repl.h"
 #include "util.h"
 #include "style.h"
 
@@ -8,12 +8,12 @@
 
 namespace dom {
 
-    Shell::Shell(Tree* tree) : tree(tree)
+    REPL::REPL(Tree* tree) : tree(tree)
     {
         this->vm = new VirtualMachine(tree);
     }
 
-    void Shell::start()
+    void REPL::start()
     {
         if (tree == nullptr || !tree->isBuilt())
         {
@@ -33,17 +33,17 @@ namespace dom {
             if (cmd.empty()) continue;
             if (cmd == "exit") break;
                 
-            if (cmd[0] == '$')
-            {
-                Node* matchedNode = vm->select(cmd);
-                if (matchedNode) startSubCmdLoop(matchedNode);
-                else Log("No match found.");
-            }
-            else vm->executeCmd(cmd);
+            // if (cmd[0] == '$')
+            // {
+            //     Node* matchedNode = vm->select(cmd);
+            //     if (matchedNode) startSubCmdLoop(matchedNode);
+            //     else Log("No match found.");
+            // }
+            // else vm->executeCmd(cmd);
         }
     }
 
-    void Shell::startSubCmdLoop(Node* selected) const
+    void REPL::startSubCmdLoop(Node* selected) const
     {
         Log(TEXT_BOLD << "$ " << selected->toString() << TEXT_RESET);
         std::string subCmd;
@@ -57,7 +57,7 @@ namespace dom {
             if (subCmd == "return") return;
             if (subCmd == "exit") std::exit(0);
 
-            vm->executeSubCmd(subCmd, selected);
+            // vm->executeSubCmd(subCmd, selected);
         }
     }
 

@@ -3,9 +3,17 @@
 
 #include <iostream>
 #include <vector>
+#include <regex>
 
 #include "tree.h"
 #include "vm.h"
+
+#define SELECTOR        0
+#define MULTI_SELECTOR  1
+#define OPENING_BRACE   2
+#define CLOSING_BRACE   3
+#define SEMICOLON       4
+#define FUNCTION_CALL   5
 
 namespace dom {
     
@@ -14,19 +22,30 @@ namespace dom {
     private:
         Tree* tree;
         VirtualMachine vm;
-        std::vector<std::string> src;
+        std::string src;
 
-        struct ScriptCommand
+        struct RegexGroup
         {
-            std::string cmd;
-            std::vector<std::string>* subCmds;
+            std::regex rgx;
+            unsigned int type;
         };
 
-        std::vector<ScriptCommand*>* commands;
+        struct ScriptToken
+        {
+            std::string token;
+            unsigned int type;
+        };
 
+        static std::string getSelectorString(ScriptToken& token);
+
+        RegexGroup regexGroups[6];
+        std::vector<ScriptToken> tokens;
+        int tokenize();
+
+        int validate();
+
+        std::vector<dom::Statement> statements;
         int parse();
-
-        static void cleanSource(std::string& line);
     public:
         ScriptRunner(Tree* tree, char* scriptSrc);
 

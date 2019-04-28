@@ -2,7 +2,7 @@
 
 #include "node.h"
 #include "tree.h"
-#include "shell.h"
+#include "repl.h"
 #include "parser.h"
 #include "script.h"
 #include "vm.h"

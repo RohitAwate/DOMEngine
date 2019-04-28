@@ -1,5 +1,5 @@
-#ifndef SHELL_H
-#define SHELL_H
+#ifndef REPL_H
+#define REPL_H
 
 #include "node.h"
 #include "tree.h"
@@ -7,13 +7,13 @@
 
 namespace dom {
 
-	class Shell
+	class REPL
 	{
 	private:
 		Tree* tree;
 		VirtualMachine* vm;
 	public:
-		Shell(Tree* tree);
+		REPL(Tree* tree);
 
 		void start();
 	private:
@@ -22,4 +22,4 @@ namespace dom {
 
 } // namespace dom
 
-#endif  // SHELL_H
+#endif  // REPL_H
